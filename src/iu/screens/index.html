@@ -9,13 +9,20 @@
 <body>
     <div class="container">
         <h1>ImAsembler</h1>
-        <h2>Aprende Asmbler y como usar PIC16F84A</h2>
+        <h2>Aprende Asembler y como usar PIC16F84A</h2>
         <p class="subtitle">Plataforma interactiva para aprender ensamblador mediante juegos, animaciones y simulaciones.</p>
 
-        <button id="startBtn">Comenzar</button>
-
-        <p id="status"></p>
+         <nav class="navbar">
+            <ul class="nav-buttons">
+            <li><button onclick="simulador()">Simulador del PIC</button></li>
+            <li><button onclick="minijuego()">Minijuegos de Ensamblador</button></li>
+            <li><button onclick="lecciones()">Lecciones ASM</button></li>
+            </ul>
+        </nav>
+        <!-- <button id="startBtn">Comenzar</button>
+        <p id="status"></p> -->
     </div>
+    
 
     <script src="../js/renderer.js"></script>
 </body>
