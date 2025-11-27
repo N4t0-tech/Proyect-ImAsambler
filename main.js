@@ -7,7 +7,7 @@ const createWindow = () => {
     autoHideMenuBar: true,
   })
 
-  win.loadFile('src/index.html')
+  win.loadFile('src/iu/screens/index.html')
 }
 
 app.whenReady().then(() => {
