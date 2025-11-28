@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ImAsembler - Simulador</title>
+    <link rel="stylesheet" href="../css/start-style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1 style="margin: 0">Bienvenido a ImAsembler</h1>
+      </header>
+
+      <section class="split">
+        <div class="left">
+          <div class="editor">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 8px;
+              "
+            >
+              <strong>Editor</strong>
+            </div>
+            <textarea
+              id="codeEditor"
+              placeholder="Escribe tu código aquí..."
+            ></textarea>
+            <div>
+              <button id="btnSave" class="btn">Guardar</button>
+              <button id="btnClear" class="btn">Limpiar</button>
+            </div>
+
+            <div
+              id="saveStatus"
+              style="margin-top: 8px; color: #8b949e; font-size: 0.9em"
+            >
+              Estado: sin cambios
+            </div>
+          </div>
+        </div>
+
+        <div class="right">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 8px;
+            "
+          >
+            <strong style="color: #8b949e">Simulador PIC16F84A</strong>
+          </div>
+          <section id="simulatorArea">
+            <!-- Aquí se renderizará el simulador -->
+          </section>
+        </div>
+      </section>
+      <button id="btnVolver" class="btn-back btn">Volver</button>
+    </div>
+    <script src="../js/start-renderer.js"></script>
+  </body>
+</html>

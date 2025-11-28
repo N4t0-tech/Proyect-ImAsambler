@@ -1,3 +1,6 @@
+/* Estilos específicos para la página start */
+
+/* Reglas base copiadas de style.css para que esta página sea independiente */
 body {
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
@@ -45,45 +48,6 @@ button:hover {
   color: #8b949e;
 }
 
-.navbar {
-  display: flex;
-  justify-content: center;
-  padding: 10px 20px;
-}
-
-.logo {
-  color: white;
-  font-size: 1.5em;
-  font-weight: bold;
-}
-
-.nav-buttons {
-  list-style: none;
-  display: flex;
-  gap: 10px;
-  margin: 0;
-  padding: 0;
-}
-.nav-buttons li {
-  display: flex;
-  justify-content: space-around;
-}
-.nav-buttons button {
-  background-color: #3498db;
-  border: none;
-  color: white;
-  font-size: 1em;
-  cursor: pointer;
-  border-radius: 5px;
-  transition: background-color 0.3s;
-  align-items: center;
-  margin: 0px;
-}
-
-.nav-buttons button:hover {
-  background-color: #2980b9;
-}
-
 /* Enlaces dentro del contenedor: sin color por defecto y sin subrayado */
 .container a,
 .container a:visited {
@@ -98,7 +62,8 @@ button:hover {
   margin-top: 20px;
   align-items: stretch;
 }
-.left, .right {
+.left,
+.right {
   flex: 1 1 50%;
 }
 .editor {
@@ -107,8 +72,10 @@ button:hover {
   align-items: stretch;
 }
 .editor textarea {
+  box-sizing: border-box;
   width: 100%;
-  min-height: 380px;
+  max-width: 100%;
+  min-height: 320px;
   background: #0b1116;
   color: #c9d1d9;
   border: 1px solid #262b31;
@@ -117,11 +84,46 @@ button:hover {
   font-family: monospace;
   font-size: 14px;
   resize: vertical;
+  overflow: auto;
+}
+.blank {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  min-height: 380px;
 }
 
 /* Ajuste responsive */
-@media (max-width: 800px){
-  .split{ flex-direction: column; }
-  .container{ padding: 20px; margin: 30px auto; }
-  button{ width: auto; }
+@media (max-width: 800px) {
+  .split {
+    flex-direction: column;
+  }
+}
+.btn-back {
+  background-color: #e74c3c;
+  border: none;
+  color: white;
+  font-size: 1em;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+  align-items: center;
+  padding: 10px 20px;
+  display: block;
+  margin: 20px auto;
+}
+
+/* Estilos para el área del simulador: fondo contrastante y padding */
+#simulatorArea {
+  background: linear-gradient(135deg, #08324a 0%, #0b516f 100%);
+  color: #ffffff;
+  padding: 16px;
+  border-radius: 8px;
+  min-height: 320px;
+  box-shadow: 0 6px 18px rgba(2, 12, 27, 0.6);
+  box-sizing: border-box;
+}
+
+.right {
+  padding: 12px;
 }
