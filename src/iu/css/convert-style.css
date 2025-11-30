@@ -113,10 +113,11 @@ button:hover {
   margin: 20px auto;
 }
 
-/* Estilos para el área del simulador: fondo contrastante y padding */
-#simulatorArea {
+/* Estilos para el área del convertidor: fondo contrastante y padding */
+#codigoArea {
   background: linear-gradient(135deg, #08324a 0%, #0b516f 100%);
   color: #ffffff;
+  text-align: left;
   padding: 16px;
   border-radius: 8px;
   min-height: 320px;
@@ -126,4 +127,36 @@ button:hover {
 
 .right {
   padding: 12px;
+}
+
+/* Estilos para modal de confirmación */
+.modal.hidden {
+  display: none;
+}
+.modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+}
+.modal-dialog {
+  position: relative;
+  background: #0f1720;
+  border-radius: 10px;
+  padding: 18px;
+  min-width: 280px;
+  max-width: 90%;
+  box-shadow: 0 10px 30px rgba(2, 8, 23, 0.6);
+  z-index: 2100;
+}
+.modal-dialog button.btn {
+  min-width: 88px;
 }

@@ -4,12 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ImAsembler - Simulador</title>
-    <link rel="stylesheet" href="../css/start-style.css" />
+    <link rel="stylesheet" href="../css/convert-style.css" />
   </head>
   <body>
     <div class="container">
       <header>
-        <h1 style="margin: 0">Bienvenido a ImAsembler</h1>
+        <h1 style="margin: 0">Editor Asembler</h1>
+        <p>Aprende a Programar en Asembler</p>
       </header>
 
       <section class="split">
@@ -32,6 +33,7 @@
             <div>
               <button id="btnSave" class="btn">Guardar</button>
               <button id="btnClear" class="btn">Limpiar</button>
+              <button id="btnConvert" class="btn">Convertir</button>
             </div>
 
             <div
@@ -52,15 +54,36 @@
               margin-bottom: 8px;
             "
           >
-            <strong style="color: #8b949e">Simulador PIC16F84A</strong>
+            <strong style="color: #8b949e">Convertidor .ASM a HEX</strong>
           </div>
-          <section id="simulatorArea">
-            <!-- Aquí se renderizará el simulador -->
+          <section id="codigoArea">
+            <!-- Aquí se renderizará el Codigo -->
           </section>
         </div>
       </section>
       <button id="btnVolver" class="btn-back btn">Volver</button>
     </div>
-    <script src="../js/start-renderer.js"></script>
+    <!-- Modal de confirmación (oculto por defecto) -->
+    <div id="confirmModal" class="modal hidden" aria-hidden="true">
+      <div class="modal-overlay" data-role="overlay"></div>
+      <div class="modal-dialog" role="dialog" aria-modal="true">
+        <div id="confirmMessage" style="color: #c9d1d9; font-size: 1em">
+          ¿Seguro que quiere convertir?
+        </div>
+        <div style="margin-top: 12px; text-align: right">
+          <button
+            id="btnConfirmNo"
+            class="btn"
+            style="background: #6c757d; margin-right: 8px"
+          >
+            Cancelar
+          </button>
+          <button id="btnConfirmYes" class="btn" style="background: #238636">
+            Confirmar
+          </button>
+        </div>
+      </div>
+    </div>
+    <script src="../js/convert-renderer.js"></script>
   </body>
 </html>
