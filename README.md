@@ -19,12 +19,6 @@ El proyecto busca reemplazar el enfoque tradicional —técnico, árido y abstra
 
 La idea principal es que los estudiantes comprendan cómo funcionan las instrucciones ensamblador **viendo** cómo afectan al microcontrolador en tiempo real.
 
-Está dirigido a estudiantes de:
-
-* Programación
-* Electrónica
-* Sistemas embebidos
-* Arquitectura computacional
 
 ---
 
