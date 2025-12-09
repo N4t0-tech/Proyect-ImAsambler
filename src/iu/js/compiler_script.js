@@ -296,3 +296,11 @@ function showToast(message, type = 'success') {
         toast.classList.remove('show');
     }, 3000);
 }
+(function () {
+  const btn = document.getElementById("btnVolver");
+  if (btn) {
+    btn.addEventListener("click", function () {
+      window.location.href = "index.html";
+    });
+  }
+})();
