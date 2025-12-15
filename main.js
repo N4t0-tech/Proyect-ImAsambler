@@ -2,7 +2,7 @@ const { app, BrowserWindow } = require('electron/main')
 
 const createWindow = () => {
   const win = new BrowserWindow({
-    width: 1100,
+    width: 1800,
     height: 840,
     autoHideMenuBar: true,
   })
