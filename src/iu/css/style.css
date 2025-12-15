@@ -1,87 +1,102 @@
 body {
-    margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    background: #0d1117;
-    color: #c9d1d9;
+  background-color: #011c40;
 }
-
+.Main-container {
+  background-color: rgba(26, 31, 51, 0.8);
+  border: 1px solid rgba(37, 99, 235, 0.8);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+}
 .container {
-    max-width: 700px;
-    margin: 70px auto;
-    background: #161b22;
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
-    text-align: center;
-}
-
-h1 {
-    color: #58a6ff;
-}
-
-.subtitle {
-    margin-top: 10px;
-    color: #8b949e;
-    font-size: 18px;
-}
-
-button {
-    background: #238636;
-    border: none;
-    padding: 12px 24px;
-    color: white;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 18px;
-    margin-top: 25px;
-}
-
-button:hover {
-    background: #2ea043;
-}
-
-#status {
-    margin-top: 20px;
-    color: #8b949e;
-}
-
-.navbar {
-  display: flex;
-  justify-content: center;
-  padding: 10px 20px;
-  
-  
-}
-
-.logo {
+  padding: 20px;
+  background-color: rgba(26, 31, 51, 0.8);
   color: white;
-  font-size: 1.5em;
-  font-weight: bold;
-}
-
-.nav-buttons {
-  list-style: none;
+  border-radius: 30px;
   display: flex;
-  gap: 10px;
-  margin: 0;
-  padding: 0;
+  flex-direction: column;
+  gap: 20px;
+  border: 1px solid rgba(37, 99, 235, 0.8);
+  margin-bottom: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
-.nav-buttons li {
-    display: flex;
-    justify-content: space-around;
+.container p {
+  font-size: 20px;
+  line-height: 1.6;
+  margin-bottom: 40px;
+  font-family: "Bitcount Prop Single", monospace;
 }
-.nav-buttons button {
-  background-color: #3498db;
+.container h2 {
+  font-family: "Nabla", cursive;
+  font-size: 38px;
+  border-bottom: 1px solid #2563eb;
+}
+.Main-container h1 {
+  font-size: 3.5rem;
+  text-align: center;
+  height: 50px;
+  font-family: "Nabla", cursive;
+  display: inline;
+}
+.btn {
+  background-color: #444ca9;
   border: none;
   color: white;
-  font-size: 1em;
+  padding: 10px 24px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 0px 20px;
   cursor: pointer;
-  border-radius: 5px;
-  transition: background-color 0.3s;
-  align-items: center;
-  margin: 0px;
+  border-radius: 8px;
+  font-family: "Bitcount Prop Single", monospace;
+  width: 100%;
+  max-width: 200px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  flex: 0 1 auto;
+}
+.btn:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.6);
+  filter: brightness(1.2);
 }
 
-.nav-buttons button:hover {
-  background-color: #2980b9;
+.nav-main {
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.nav-main ul {
+  display: flex;
+  flex-wrap: wrap; 
+  gap: 20px;
+}
+
+.nav-main .btn {
+  flex: 1 1 calc(25% - 20px); /* Botones distribuidos uniformemente */
+  max-width: 250px;
+  height: 50px;
+  margin: auto 5px;
+  text-align: center;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  font-size: smaller;
+}
+
+@media (max-width: 1024px) {
+  .btn {
+    flex: 1 1 calc(50% - 20px); /* 2 botones por línea en pantallas medianas */
+  }
+}
+
+@media (max-width: 600px) {
+  .btn {
+    flex: 1 1 100%; /* Botones apilados en pantallas pequeñas */
+  }
 }

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Compilador ASM a Hexadecimal - PIC16F84A</title>
+    <link rel="stylesheet" href="../css/compiler_styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-content">
+          <svg
+            class="icon-large"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+            ></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          <div>
+            <h1>Compilador ASM a Hexadecimal</h1>
+            <p class="subtitle">
+              Herramienta educativa para aprender ensamblador y
+              microcontroladores PIC
+            </p>
+          </div>
+          <button id="btnVolver" class="btn-primary btnVolver">Volver</button>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <div class="main-grid">
+        <!-- Left Column - Code Editor -->
+        <div class="left-column">
+          <div class="section-header">
+            <h2>Editor de Código</h2>
+            <button id="compileBtn" class="btn-primary">
+              <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+              Compilar
+            </button>
+          </div>
+
+          <!-- Code Editor -->
+          <div class="code-editor-container">
+            <div class="line-numbers" id="lineNumbers"></div>
+            <div class="code-area-wrapper">
+              <div class="syntax-highlight" id="syntaxHighlight"></div>
+              <textarea
+                id="codeEditor"
+                class="code-editor"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Output Tabs -->
+          <div class="tabs-container">
+            <div class="tabs-header">
+              <button class="tab-btn active" data-tab="hex">
+                Salida Hexadecimal
+              </button>
+              <button class="tab-btn" data-tab="errors">
+                Errores <span id="errorCount" class="error-badge">0</span>
+              </button>
+            </div>
+
+            <!-- Hex Output Tab -->
+            <div id="hexTab" class="tab-content active">
+              <div class="output-header">
+                <span>Código Hexadecimal</span>
+                <div class="btn-group">
+                  <button id="copyBtn" class="btn-secondary" disabled>
+                    <svg
+                      class="icon"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <rect
+                        x="9"
+                        y="9"
+                        width="13"
+                        height="13"
+                        rx="2"
+                        ry="2"
+                      ></rect>
+                      <path
+                        d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                      ></path>
+                    </svg>
+                    Copiar
+                  </button>
+                  <button id="downloadBtn" class="btn-secondary" disabled>
+                    <svg
+                      class="icon"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+                      ></path>
+                      <polyline points="7 10 12 15 17 10"></polyline>
+                      <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Descargar
+                  </button>
+                </div>
+              </div>
+              <div class="output-box">
+                <pre id="hexOutput" class="hex-output">
+// La salida hexadecimal aparecerá aquí después de compilar</pre
+                >
+              </div>
+            </div>
+
+            <!-- Errors Tab -->
+            <div id="errorsTab" class="tab-content">
+              <div class="output-box">
+                <div id="errorsList" class="errors-list">
+                  <p class="success-message">✓ No hay errores</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column - Instructions Panel -->
+        <div class="right-column">
+          <div class="instructions-panel">
+            <h2>Referencia de Instrucciones</h2>
+
+            <!-- Search -->
+            <div class="search-container">
+              <svg
+                class="search-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+              </svg>
+              <input
+                type="text"
+                id="searchInput"
+                class="search-input"
+                placeholder="Buscar instrucción..."
+              />
+            </div>
+
+            <!-- Instruction Tabs -->
+            <div class="instruction-tabs">
+              <button class="instruction-tab active" data-instruction-tab="all">
+                Todas
+              </button>
+              <button class="instruction-tab" data-instruction-tab="quick">
+                Rápida
+              </button>
+            </div>
+
+            <!-- All Instructions Tab -->
+            <div id="allInstructionsTab" class="instruction-tab-content active">
+              <div id="instructionsList" class="instructions-list"></div>
+            </div>
+
+            <!-- Quick Reference Tab -->
+            <div id="quickRefTab" class="instruction-tab-content">
+              <div class="quick-ref">
+                <div class="ref-section">
+                  <h3>Formato de Números</h3>
+                  <ul>
+                    <li><code>0x0F</code> - Hexadecimal</li>
+                    <li><code>0b1111</code> - Binario</li>
+                    <li><code>15</code> - Decimal</li>
+                    <li><code>0Fh</code> - Hex con sufijo</li>
+                  </ul>
+                </div>
+
+                <div class="ref-section">
+                  <h3>Destino</h3>
+                  <ul>
+                    <li><code>W</code> o <code>0</code> - Registro W</li>
+                    <li><code>F</code> o <code>1</code> - Archivo (File)</li>
+                  </ul>
+                </div>
+
+                <div class="ref-section">
+                  <h3>Directivas</h3>
+                  <ul>
+                    <li><code>ORG 0x00</code> - Origen</li>
+                    <li><code>END</code> - Fin del programa</li>
+                  </ul>
+                </div>
+
+                <div class="ref-section">
+                  <h3>Ejemplos</h3>
+                  <div class="code-example">
+                    <div class="comment">; Mover literal a W</div>
+                    <div><span class="instruction">MOVLW</span> 0x0F</div>
+
+                    <div class="comment">; Mover W a archivo</div>
+                    <div><span class="instruction">MOVWF</span> 0x05</div>
+
+                    <div class="comment">; Incrementar archivo</div>
+                    <div><span class="instruction">INCF</span> 0x05, F</div>
+
+                    <div class="comment">; Saltar a dirección</div>
+                    <div><span class="instruction">GOTO</span> 0x10</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <h1>DEMO</h1>
+    </footer>
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script src="../js/compiler.js"></script>
+    <script src="../js/compiler_script.js"></script>
+  </body>
+</html>

@@ -5,25 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ImAsembler</title>
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nabla&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bitcount+Prop+Single:wght@100..900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <h1>ImAsembler</h1>
-        <h2>Aprende Asembler y como usar PIC16F84A</h2>
-        <p class="subtitle">Plataforma interactiva para aprender ensamblador mediante juegos, animaciones y simulaciones.</p>
-
-         <nav class="navbar">
-            <ul class="nav-buttons">
-            <li><button onclick="simulador()">Simulador del PIC</button></li>
-            <li><button onclick="minijuego()">Minijuegos de Ensamblador</button></li>
-            <li><button onclick="lecciones()">Lecciones Asembler</button></li>
+    <div class="Main-container">
+        <nav class="nav-main">
+            <ul>
+                <h1>ImAsembler</h1>
+                <button id="btnEmpezar" class="btn">Editor Asembler</button>
+                <button id="btnSimulador" class="btn">Simulador PIC16F84A</button>
+                <button id="btnDocumentacion" class="btn">Documentación</button>
+                <button id="btnMinijuegos" class="btn">Minijuegos</button>
             </ul>
         </nav>
-        <!-- <button id="startBtn">Comenzar</button>
-        <p id="status"></p> -->
     </div>
-    
-
+    <div class="container">
+        <p>
+            Bienvenido a ImAsembler. Aprende ensamblador para el PIC16F84A mediante lecciones prácticas, un compilador integrado, un simulador visual y minijuegos educativos. Diseñado para estudiantes y docentes, ImAsembler combina teoría y práctica para que programes, simules y entiendas el funcionamiento real del microcontrolador.
+        </p>
+        <h2>📌 Descripción del proyecto</h2>
+        <p>
+            
+        </p>
+    </div>
     <script src="../js/renderer.js"></script>
 </body>
 </html>
