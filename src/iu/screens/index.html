@@ -13,25 +13,62 @@
     <link href="https://fonts.googleapis.com/css2?family=Bitcount+Prop+Single:wght@100..900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="Main-container">
         <nav class="nav-main">
             <ul>
                 <h1>ImAsembler</h1>
                 <button id="btnEmpezar" class="btn">Editor Asembler</button>
-                <button id="btnSimulador" class="btn">Simulador PIC16F84A</button>
-                <button id="btnDocumentacion" class="btn">Documentación</button>
+                <!-- hacer Simulador del pic16F84A (solo apariencia nada funcional y tiene que seguir el estilo de la pagina osea que tenga algo azul) -->
+                <button id="btnSimulador" class="btn">Simulador PIC16F84A</button> 
+                <!-- Hacer minijuegos usando asmbler y control de bases de datos de las memorias -->
                 <button id="btnMinijuegos" class="btn">Minijuegos</button>
+                <!-- Añadir una pagina para explicar como funcina asmbler y las bases de memoria y cosas basicas que se necesiten -->
+                <button id="btnDocumentacion" class="btn">Manuales</button>
+
             </ul>
         </nav>
-    </div>
+
     <div class="container">
         <p>
             Bienvenido a ImAsembler. Aprende ensamblador para el PIC16F84A mediante lecciones prácticas, un compilador integrado, un simulador visual y minijuegos educativos. Diseñado para estudiantes y docentes, ImAsembler combina teoría y práctica para que programes, simules y entiendas el funcionamiento real del microcontrolador.
         </p>
         <h2>📌 Descripción del proyecto</h2>
         <p>
-            
+            ImAsembler es una aplicación interactiva diseñada para transformar el aprendizaje del ensamblador del microcontrolador PIC16F84A, volviéndolo accesible, dinámico y motivador. A través de una combinación de teoría, práctica y minijuegos educativos, los usuarios pueden adquirir conocimientos sólidos en programación ensamblador mientras se divierten.
         </p>
+        <p>
+            El proyecto busca reemplazar el enfoque tradicional —técnico, árido y abstracto— con una experiencia pedagógica moderna basada en:
+        </p>
+        <ul>
+            <li>Minijuegos educativos</li>
+            <li>Simulaciones visuales</li>
+            <li>Animaciones interactivas</li>
+            <li>Feedback inmediato</li>
+            <li>Representaciones dinamicas del hardware</li>
+        </ul>
+        <p>La idea principal es que los estudiantes comprendan cómo funcionan las instrucciones ensamblador viendo cómo afectan al microcontrolador en tiempo real</p>
+        <h2>🎮 Características principales</h2>
+        <h4>🔧 Simulador visual del PIC16F84A</h4>
+        <ul>
+            Incluye representaciones animadas de:
+
+            <li>Memoria RAM</li>
+            <li>Registros</li>
+            <li>Contador de programa</li>
+            <li>Puertos de entrada/salida</li>
+            <li>Timer</li>
+            Y muestra cómo cada instrucción modifica estos componentes.
+        </ul>
+        <h4>🎮 Minijuegos educativos</h4>
+        <ul>
+            Minijuegos basados en instrucciones reales del PIC, como:
+
+
+            <li>MOVLW</li>
+            <li>BTFSC</li>
+            <li>CALL</li>
+            <li>GOTO</li>
+            <li>INCF y DECF</li>
+        </ul>
     </div>
     <script src="../js/renderer.js"></script>
 </body>
