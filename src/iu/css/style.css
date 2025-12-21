@@ -1,46 +1,48 @@
 body {
   background-color: #011c40;
+  padding: 0;
+  margin: 0;
 }
-.Main-container {
-  background-color: rgba(26, 31, 51, 0.8);
-  border: 1px solid rgba(37, 99, 235, 0.8);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  border-radius: 20px;
-}
+
 .container {
   padding: 20px;
-  background-color: rgba(26, 31, 51, 0.8);
   color: white;
-  border-radius: 30px;
+  border-radius: 5px;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  border: 1px solid rgba(37, 99, 235, 0.8);
   margin-bottom: 40px;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  background: #1e293bcc;
+  backdrop-filter: blur(10px);
+  border: 1px solid #475569;
 }
 .container p {
-  font-size: 20px;
+  font-size: 18px;
   line-height: 1.6;
-  margin-bottom: 40px;
+  margin-bottom: 10px;
   font-family: "Bitcount Prop Single", monospace;
 }
 .container h2 {
   font-family: "Nabla", cursive;
   font-size: 38px;
-  border-bottom: 1px solid #2563eb;
+  border-bottom: 1px solid #ffffff;
 }
-.Main-container h1 {
-  font-size: 3.5rem;
-  text-align: center;
-  height: 50px;
+.container h4 {
   font-family: "Nabla", cursive;
-  display: inline;
+  font-size: 24px;
+  margin-top: -10px;
+  margin-bottom: 10px;
+}
+.nav-main h1 {
+  font-size: 2rem;
+  margin-right: 10px;
+  font-family: "Nabla", cursive;
 }
 .btn {
-  background-color: #444ca9;
+  background: linear-gradient(135deg, #3466b5 0%, #2a51a5 100%);
   border: none;
   color: white;
   padding: 10px 24px;
@@ -53,35 +55,40 @@ body {
   border-radius: 8px;
   font-family: "Bitcount Prop Single", monospace;
   width: 100%;
-  max-width: 200px;
   text-transform: uppercase;
   letter-spacing: 1px;
   transition: all 0.3s ease;
   flex: 0 1 auto;
 }
 .btn:hover {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  background: linear-gradient(135deg, #1f55ca 0%, #143797 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.6);
+  box-shadow: 0 6px 20px rgba(20, 55, 130, 0.6);
   filter: brightness(1.2);
 }
 
 .nav-main {
+  background: #ffffff1a;
+  border-radius: 0px 0px 20px 20px;
+  margin-top: 0;
+  padding: 0;
+  margin-bottom: 10px;
   align-items: center;
-  gap: 20px;
-  width: 100%;
+  width: 1fr;
+  border: 1px solid #475569;
+
 }
 
 .nav-main ul {
   display: flex;
   flex-wrap: wrap; 
-  gap: 20px;
+  margin: 0;
 }
 
 .nav-main .btn {
   flex: 1 1 calc(25% - 20px); /* Botones distribuidos uniformemente */
-  max-width: 250px;
-  height: 50px;
+  max-width: 223px;
+  height: 38px;
   margin: auto 5px;
   text-align: center;
   border-radius: 8px;
@@ -99,4 +106,10 @@ body {
   .btn {
     flex: 1 1 100%; /* Botones apilados en pantallas pequeñas */
   }
+}
+.container ul {
+  font-size: 18px;
+  line-height: 1.6;
+  margin-bottom: 10px;
+  font-family: "Bitcount Prop Single", monospace;
 }
