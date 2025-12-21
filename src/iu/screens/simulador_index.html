@@ -1,11 +1,53 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>vacio</title>
-</head>
-<body>
-    vacio porque el frontend esta muerto 
-</body>
-</html>
+<div id="simulador-container" class="sim-wrapper">
+    <header class="sim-header">
+        <h2>Simulador PIC16F84A</h2>
+        <div class="status-badge">Estado: IDLE</div>
+    </header>
+
+    <main class="sim-grid">
+        <section class="panel registros">
+            <h3>Registros</h3>
+            <div class="reg-box">
+                <label>W (Working):</label>
+                <div id="regW" class="hex-display">0x00</div>
+            </div>
+            <div class="reg-box">
+                <label>STATUS:</label>
+                <div class="bits-row">
+                    <span>Z: 0</span><span>C: 0</span><span>DC: 0</span>
+                </div>
+            </div>
+            <div class="reg-box">
+                <label>PC (Program Counter):</label>
+                <div id="regPC" class="hex-display">0x000</div>
+            </div>
+        </section>
+
+        <section class="panel chip-visual">
+            <div class="pic-chip">
+                <div class="chip-label">PIC16F84A</div>
+                <div class="pines-izquierda">
+                    <div class="pin">RA2</div><div class="pin">RA3</div>
+                    <div class="pin">RA4</div><div class="pin">MCLR</div>
+                </div>
+                <div class="pines-derecha">
+                    <div class="pin">RB7</div><div class="pin">RB6</div>
+                    <div class="pin">RB5</div><div class="pin">RB4</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel i-o">
+            <h3>Puertos I/O</h3>
+            <div class="port-group">
+                <label>PORTB (LEDs)</label>
+                <div class="led-bar">
+                    <div class="led off"></div><div class="led off"></div>
+                    <div class="led off"></div><div class="led off"></div>
+                    <div class="led off"></div><div class="led off"></div>
+                    <div class="led off"></div><div class="led off"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
