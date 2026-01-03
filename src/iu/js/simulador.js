@@ -10,7 +10,7 @@ require(["vs/editor/editor.main"], function () {
     language: "plaintext",
     theme: "vs",
 
-    readOnly: false, // importante
+    readOnly: false,
     automaticLayout: true,
 
     fontSize: 14,
@@ -20,7 +20,7 @@ require(["vs/editor/editor.main"], function () {
     scrollBeyondLastLine: false,
   });
 
-  editor.focus(); // FUERZA foco
+  editor.focus();
   window.editor = editor;
 });
 
@@ -61,11 +61,19 @@ function pause() {
 
 function step() {
   if (currentLine < lines.length) {
-    console.log("Ejecutando línea:", lines[currentLine]);
+    PICInterpreter.step(lines[currentLine]);
+
+    const state = PICInterpreter.getState();
+
+    // 🔴 SINCRONIZACIÓN VISUAL
+    syncSFR(state);
+
     currentLine++;
     updateInputs();
   }
 }
+
+
 
 function stop() {
   clearInterval(playInterval);
@@ -81,17 +89,97 @@ document.getElementById("btnLimpiar").addEventListener("click", () => {
   updateInputs();
 });
 
+
 document.getElementById("btnSimular").addEventListener("click", () => {
   const codigo = editor.getValue();
   lines = codigo.split("\n");
+
+  // 1. Resetear intérprete
+  PICInterpreter.reset();
+
+  // 2. Validar código
+  const errors = PICInterpreter.validate(lines);
+  if (errors.length > 0) {
+    console.error("Errores de compilación:", errors);
+    alert(
+      errors
+        .map(e => `Línea ${e.line}: ${e.error}`)
+        .join("\n")
+    );
+    return;
+  }
+
+  // 3. Inicializar simulación
   currentLine = 0;
   updateInputs();
-  console.log("Código cargado para simulación:", lines);
+
+  console.log("Código válido. Listo para simular.");
 });
+
+
+
+
+
 
 document.getElementById("btnIndex").addEventListener("click", function () {
     window.location.href = "index.html";
 });
+
+
+document.querySelectorAll(".sfr-row").forEach(row => {
+    const hexSpan = row.querySelector("span:nth-child(3)");
+    const bitSpans = row.querySelectorAll(".bits span");
+
+    if (!hexSpan || bitSpans.length !== 8) return;
+
+    // Leer hexadecimal
+    const hexValue = hexSpan.textContent.trim();
+
+    // Convertir HEX → BIN (8 bits)
+    const bin = parseInt(hexValue, 16)
+        .toString(2)
+        .padStart(8, "0");
+
+    // Asignar cada bit
+    bitSpans.forEach((bitSpan, index) => {
+        bitSpan.textContent = bin[index];
+
+        // Opcional: estilos visuales
+        bitSpan.classList.toggle("bit-on", bin[index] === "1");
+        bitSpan.classList.toggle("bit-off", bin[index] === "0");
+    });
+});
+
+
+function updateSFRRow(row, value) {
+  const hexSpan = row.querySelector("span:nth-child(3)");
+  const bitSpans = row.querySelectorAll(".bits span");
+
+  const hex = value.toString(16).toUpperCase().padStart(2, "0");
+  hexSpan.textContent = hex;
+
+  const bin = value.toString(2).padStart(8, "0");
+
+  bitSpans.forEach((bitSpan, i) => {
+    bitSpan.textContent = bin[i];
+    bitSpan.classList.toggle("active", bin[i] === "1");
+  });
+}
+
+function syncSFR(state) {
+  document.querySelectorAll(".sfr-row").forEach(row => {
+    const nameSpan = row.querySelector("span:nth-child(2)");
+    if (!nameSpan) return;
+
+    const regName = nameSpan.textContent.trim();
+    const value = state.registers[regName];
+
+    if (value !== undefined) {
+      updateSFRRow(row, value);
+    }
+  });
+}
+
 
 
 document.querySelector(".play").addEventListener("click", play);
@@ -106,3 +194,4 @@ document.getElementById("pcBin").value = pc.toString(2).padStart(13, "0");
 document.querySelectorAll(".binary-view span").forEach((bit, i) => {
   bit.classList.toggle("active", w & (1 << (7 - i)));
 });
+
