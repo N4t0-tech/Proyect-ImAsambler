@@ -36,44 +36,36 @@ function updateInputs() {
   lastInput.value = currentLine > 0 ? lines[currentLine - 1] : "";
   nextInput.value = currentLine < lines.length ? lines[currentLine] : "";
 }
+function executeCurrentLine() {
+  if (currentLine >= lines.length) {
+    stop();
+    return;
+  }
+
+  PICInterpreter.step(lines[currentLine]);
+
+  const state = PICInterpreter.getState();
+  syncSFR(state);
+
+  currentLine++;
+  updateInputs();
+}
+
 
 function play() {
-  if (!isPlaying) {
-    isPlaying = true;
-    playInterval = setInterval(() => {
-      if (currentLine < lines.length) {
-        console.log("Ejecutando línea:", lines[currentLine]);
-        currentLine++;
-        updateInputs();
-      } else {
-        stop();
-      }
-    }, 1000);
-  }
+  if (isPlaying) return;
+
+  isPlaying = true;
+  playInterval = setInterval(() => {
+    executeCurrentLine();
+  }, 700); // velocidad (ms)
 }
 
 function pause() {
-  if (isPlaying) {
-    clearInterval(playInterval);
-    isPlaying = false;
-  }
+  if (!isPlaying) return;
+  clearInterval(playInterval);
+  isPlaying = false;
 }
-
-function step() {
-  if (currentLine < lines.length) {
-    PICInterpreter.step(lines[currentLine]);
-
-    const state = PICInterpreter.getState();
-
-    // 🔴 SINCRONIZACIÓN VISUAL
-    syncSFR(state);
-
-    currentLine++;
-    updateInputs();
-  }
-}
-
-
 
 function stop() {
   clearInterval(playInterval);
@@ -81,6 +73,14 @@ function stop() {
   currentLine = 0;
   updateInputs();
 }
+
+
+function step() {
+  executeCurrentLine();
+}
+
+
+
 
 document.getElementById("btnLimpiar").addEventListener("click", () => {
   editor.setValue("");
