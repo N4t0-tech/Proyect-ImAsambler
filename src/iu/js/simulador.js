@@ -89,6 +89,11 @@ document.getElementById("btnSimular").addEventListener("click", () => {
   console.log("Código cargado para simulación:", lines);
 });
 
+document.getElementById("btnIndex").addEventListener("click", function () {
+    window.location.href = "index.html";
+});
+
+
 document.querySelector(".play").addEventListener("click", play);
 document.querySelector(".pause").addEventListener("click", pause);
 document.querySelector(".step").addEventListener("click", step);
