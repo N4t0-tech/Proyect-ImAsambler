@@ -1,11 +1,326 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>vacio</title>
-</head>
-<body>
-    vacio porque el frontend esta muerto 
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simulador PIC16F84A</title>
+    <link rel="stylesheet" href="../css/simulador.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <style>
+      .memory-panel {
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+      }
+
+      .memory-section {
+        flex: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="title">Simulador PIC16F84A</div>
+      <div class="controls">
+        <button class="play"><i class="fa-solid fa-play"></i></button>
+        <button class="pause"><i class="fa-solid fa-pause"></i></button>
+        <button class="step"><i class="fa-solid fa-forward-step"></i></button>
+        <button class="stop"><i class="fa-solid fa-stop"></i></button>
+        <button class="volver" id="btnIndex">Volver</button>
+      </div>
+    </header>
+
+    <div class="main-container">
+      <div class="editor-wrapper">
+        <div class="editor-toolbar">
+          <button id="btnSimular">Simular</button>
+          <button id="btnLimpiar">Limpiar</button>
+        </div>
+        <div id="editor"></div>
+      </div>
+
+      <div class="right-panel">
+        <!-- titulo -->
+        <div class="panel-section">
+          <h2>Microcontrolador : PIC16F84A</h2>
+        </div>
+        <!-- ejecucion  -->
+        <div class="panel-section">
+          <h3>Flujo de ejecución</h3>
+
+          <div class="panel-row">
+            <div class="panel-item">
+              <label>Instrucción pasada</label>
+              <input type="text" id="lastIntr" disabled />
+            </div>
+
+            <div class="panel-item">
+              <label>Instrucción próxima</label>
+              <input type="text" id="nextIntr" disabled />
+            </div>
+          </div>
+        </div>
+        <!-- relog y w register -->
+        <div class="panel-section">
+          <h3>Estado de CPU</h3>
+
+          <div class="panel-row">
+            <!-- Program Counter -->
+            <div class="panel-item">
+              <label>Program Counter (bin)</label>
+              <input type="text" disabled value="0000000000000" />
+            </div>
+
+            <!-- W Register -->
+            <div class="panel-item">
+              <label>W Register</label>
+              <div class="binary-view">
+                <span>0</span><span>0</span><span>0</span><span>0</span>
+                <span>0</span><span>0</span><span>0</span><span>0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="memory-panel">
+          <!-- SFR -->
+          <div class="memory-section">
+            <h3>Special Function Registers (Bank 0)</h3>
+
+            <div class="sfr-table">
+              <div class="sfr-row sfr-header">
+                <span>Addr</span>
+                <span>Name</span>
+                <span>Hex</span>
+                <span>Bits</span>
+              </div>
+
+              <div class="sfr-row">
+                <span>00h</span><span>INDF</span><span>00</span>
+                <div class="bits">
+                  <span></span><span></span><span></span><span></span
+                  ><span></span><span></span><span></span><span></span>
+                </div>
+              </div>
+
+              <div class="sfr-row">
+                <span>01h</span><span>TMR0</span><span>00</span>
+                <div class="bits">
+                  <span></span><span></span><span></span><span></span
+                  ><span></span><span></span><span></span><span></span>
+                </div>
+              </div>
+
+              <div class="sfr-row">
+                <span>02h</span><span>PCL</span><span>00</span>
+                <div class="bits">
+                  <span></span><span></span><span></span><span></span
+                  ><span></span><span></span><span></span><span></span>
+                </div>
+              </div>
+
+              <div class="sfr-row">
+                <span>03h</span><span>STATUS</span><span>00</span>
+                <div class="bits">
+                  <span></span><span></span><span></span><span></span
+                  ><span></span><span></span><span></span><span></span>
+                </div>
+              </div>
+
+              <div class="sfr-row">
+                <span>04h</span><span>FSR</span><span>00</span>
+                <div class="bits">
+                  <span></span><span></span><span></span><span></span
+                  ><span></span><span></span><span></span><span></span>
+                </div>
+              </div>
+
+              <div class="sfr-row">
+                <span>05h</span><span>PORTA</span><span>00</span>
+                <div class="bits">
+                  <span></span><span></span><span></span><span></span
+                  ><span></span><span></span><span></span><span></span>
+                </div>
+              </div>
+
+              <div class="sfr-row">
+                <span>06h</span><span>PORTB</span><span>00</span>
+                <div class="bits">
+                  <span></span><span></span><span></span><span></span
+                  ><span></span><span></span><span></span><span></span>
+                </div>
+              </div>
+
+              <div class="sfr-row">
+                <span>08h</span><span>EEDATA</span><span>00</span>
+                <div class="bits">
+                  <span></span><span></span><span></span><span></span
+                  ><span></span><span></span><span></span><span></span>
+                </div>
+              </div>
+
+              <div class="sfr-row">
+                <span>09h</span><span>EEADR</span><span>00</span>
+                <div class="bits">
+                  <span></span><span></span><span></span><span></span
+                  ><span></span><span></span><span></span><span></span>
+                </div>
+              </div>
+
+              <div class="sfr-row">
+                <span>0Ah</span><span>PCLATH</span><span>00</span>
+                <div class="bits">
+                  <span></span><span></span><span></span><span></span
+                  ><span></span><span></span><span></span><span></span>
+                </div>
+              </div>
+
+              <div class="sfr-row">
+                <span>0Bh</span><span>INTCON</span><span>00</span>
+                <div class="bits">
+                  <span></span><span></span><span></span><span></span
+                  ><span></span><span></span><span></span><span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- GPR -->
+          <div class="memory-section">
+            <h3>General Purpose Registers (Bank 0)</h3>
+
+            <div class="gpr-table">
+              <div class="gpr-row gpr-header">
+                <span>Addr</span><span>Hex</span> <span>Addr</span
+                ><span>Hex</span>
+              </div>
+              <div class="gpr-row">
+                <span>0Ch</span><span>00</span><span>2Ch</span><span>00</span>
+              </div>
+              <div class="gpr-row">
+                <span>0Dh</span><span>00</span><span>2Dh</span><span>00</span>
+              </div>
+              <div class="gpr-row">
+                <span>0Eh</span><span>00</span><span>2Eh</span><span>00</span>
+              </div>
+              <div class="gpr-row">
+                <span>0Fh</span><span>00</span><span>2Fh</span><span>00</span>
+              </div>
+
+              <div class="gpr-row">
+                <span>10h</span><span>00</span><span>30h</span><span>00</span>
+              </div>
+              <div class="gpr-row">
+                <span>11h</span><span>00</span><span>31h</span><span>00</span>
+              </div>
+              <div class="gpr-row">
+                <span>12h</span><span>00</span><span>32h</span><span>00</span>
+              </div>
+              <div class="gpr-row">
+                <span>13h</span><span>00</span><span>33h</span><span>00</span>
+              </div>
+
+              <div class="gpr-row">
+                <span>14h</span><span>00</span><span>34h</span><span>00</span>
+              </div>
+              <div class="gpr-row">
+                <span>15h</span><span>00</span><span>35h</span><span>00</span>
+              </div>
+              <div class="gpr-row">
+                <span>16h</span><span>00</span><span>36h</span><span>00</span>
+              </div>
+              <div class="gpr-row">
+                <span>17h</span><span>00</span><span>37h</span><span>00</span>
+              </div>
+
+              <div class="gpr-row">
+                <span>18h</span><span>00</span><span>38h</span><span>00</span>
+              </div>
+              <div class="gpr-row">
+                <span>19h</span><span>00</span><span>39h</span><span>00</span>
+              </div>
+              <div class="gpr-row">
+                <span>1Ah</span><span>00</span><span>3Ah</span><span>00</span>
+              </div>
+              <div class="gpr-row">
+                <span>1Bh</span><span>00</span><span>3Bh</span><span>00</span>
+              </div>
+
+              <div class="gpr-row">
+                <span>1Ch</span><span>00</span><span>3Ch</span><span>00</span>
+              </div>
+              <div class="gpr-row">
+                <span>1Dh</span><span>00</span><span>3Dh</span><span>00</span>
+              </div>
+              <div class="gpr-row">
+                <span>1Eh</span><span>00</span><span>3Eh</span><span>00</span>
+              </div>
+              <div class="gpr-row">
+                <span>1Fh</span><span>00</span><span>3Fh</span><span>00</span>
+              </div>
+
+              <div class="gpr-row">
+                <span>20h</span><span>00</span><span>40h</span><span>00</span>
+              </div>
+              <div class="gpr-row">
+                <span>21h</span><span>00</span><span>41h</span><span>00</span>
+              </div>
+              <div class="gpr-row">
+                <span>22h</span><span>00</span><span>42h</span><span>00</span>
+              </div>
+              <div class="gpr-row">
+                <span>23h</span><span>00</span><span>43h</span><span>00</span>
+              </div>
+
+              <div class="gpr-row">
+                <span>24h</span><span>00</span><span>44h</span><span>00</span>
+              </div>
+              <div class="gpr-row">
+                <span>25h</span><span>00</span><span>45h</span><span>00</span>
+              </div>
+              <div class="gpr-row">
+                <span>26h</span><span>00</span><span>46h</span><span>00</span>
+              </div>
+              <div class="gpr-row">
+                <span>27h</span><span>00</span><span>47h</span><span>00</span>
+              </div>
+
+              <div class="gpr-row">
+                <span>28h</span><span>00</span><span>48h</span><span>00</span>
+              </div>
+              <div class="gpr-row">
+                <span>29h</span><span>00</span><span>49h</span><span>00</span>
+              </div>
+              <div class="gpr-row">
+                <span>2Ah</span><span>00</span><span>4Ah</span><span>00</span>
+              </div>
+              <div class="gpr-row">
+                <span>2Bh</span><span>00</span><span>4Bh</span><span>00</span>
+              </div>
+
+              <div class="gpr-row">
+                <span>2Ch</span><span>00</span><span>4Ch</span><span>00</span>
+              </div>
+              <div class="gpr-row">
+                <span>2Dh</span><span>00</span><span>4Dh</span><span>00</span>
+              </div>
+              <div class="gpr-row">
+                <span>2Eh</span><span>00</span><span>4Eh</span><span>00</span>
+              </div>
+              <div class="gpr-row">
+                <span>2Fh</span><span>00</span><span>4Fh</span><span>00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+    <script src="../js/simulador_interprete.js"></script>
+    <script src="../js/simulador.js"></script>
+  </body>
 </html>
