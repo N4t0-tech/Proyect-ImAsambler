@@ -36,6 +36,22 @@ function updateInputs() {
   lastInput.value = currentLine > 0 ? lines[currentLine - 1] : "";
   nextInput.value = currentLine < lines.length ? lines[currentLine] : "";
 }
+
+function updatePC(state) {
+  if (state.pc === undefined) return;
+
+  document.getElementById("pcBin").value =
+    state.pc.toString(2).padStart(13, "0");
+}
+
+function updateW(state) {
+  if (state.w === undefined) return;
+
+  document.querySelectorAll(".binary-view span").forEach((bit, i) => {
+    bit.classList.toggle("active", state.w & (1 << (7 - i)));
+  });
+}
+
 function executeCurrentLine() {
   if (currentLine >= lines.length) {
     stop();
@@ -46,6 +62,8 @@ function executeCurrentLine() {
 
   const state = PICInterpreter.getState();
   syncSFR(state);
+  updatePC(state);
+  updateW(state);
 
   currentLine++;
   updateInputs();
@@ -186,12 +204,4 @@ document.querySelector(".play").addEventListener("click", play);
 document.querySelector(".pause").addEventListener("click", pause);
 document.querySelector(".step").addEventListener("click", step);
 document.querySelector(".stop").addEventListener("click", stop);
-
-// PC
-document.getElementById("pcBin").value = pc.toString(2).padStart(13, "0");
-
-// W
-document.querySelectorAll(".binary-view span").forEach((bit, i) => {
-  bit.classList.toggle("active", w & (1 << (7 - i)));
-});
 
