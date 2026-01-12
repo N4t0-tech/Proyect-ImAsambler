@@ -14,3 +14,18 @@
     });
   }
 })();
+
+(function () {
+  const btn = document.getElementById("btnMinijuegos");
+  if (btn) {
+    btn.addEventListener("click", function () {
+      window.location.href = "minijuegos.html";
+    });
+  }
+})();
+
+
+
+
+
+
