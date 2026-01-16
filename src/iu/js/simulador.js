@@ -38,38 +38,56 @@ function updateInputs() {
 }
 
 function updatePC(state) {
-  if (state.pc === undefined) return;
+  let st = state;
+  if (!st)
+    st = window.PICInterpreter?.getState
+      ? window.PICInterpreter.getState()
+      : null;
+  if (!st || st.PC === undefined) return;
 
-  document.getElementById("pcBin").value =
-    state.pc.toString(2).padStart(13, "0");
+  const el = document.getElementById("pcBin");
+  if (!el) return;
+  const pc = st.PC;
+  el.value = pc.toString(2).padStart(8, "0");
+
+  const lastInput = document.getElementById("lastIntr");
+  const nextInput = document.getElementById("nextIntr");
+  if (lastInput) lastInput.value = pc > 0 ? lines[pc - 1] : "";
+  if (nextInput) nextInput.value = pc < lines.length ? lines[pc] : "";
 }
 
 function updateW(state) {
-  if (state.w === undefined) return;
+  if (state.W === undefined) return;
 
+  const bits = state.W.toString(2).padStart(8, "0");
   document.querySelectorAll(".binary-view span").forEach((bit, i) => {
-    bit.classList.toggle("active", state.w & (1 << (7 - i)));
+    const b = bits[i];
+    bit.textContent = b; // mostrar 0/1 en W register
+    bit.classList.toggle("active", b === "1");
   });
 }
 
 function executeCurrentLine() {
-  if (currentLine >= lines.length) {
+  const state = window.PICInterpreter?.getState
+    ? window.PICInterpreter.getState()
+    : null;
+  const pc = state?.PC ?? currentLine;
+  if (pc >= lines.length) {
     stop();
     return;
   }
 
-  PICInterpreter.step(lines[currentLine]);
+  // Ejecutar la línea indicada por PC
+  window.PICInterpreter.step(lines[pc]);
 
-  const state = PICInterpreter.getState();
-  syncSFR(state);
-  updatePC(state);
-  updateW(state);
+  const newState = window.PICInterpreter.getState();
+  syncSFR(newState);
+  updatePC(newState);
+  updateW(newState);
 
-  currentLine++;
+  currentLine = newState.PC ?? pc + 1;
   updateInputs();
 }
-
-
 function play() {
   if (isPlaying) return;
 
@@ -92,13 +110,9 @@ function stop() {
   updateInputs();
 }
 
-
 function step() {
   executeCurrentLine();
 }
-
-
-
 
 document.getElementById("btnLimpiar").addEventListener("click", () => {
   editor.setValue("");
@@ -106,7 +120,6 @@ document.getElementById("btnLimpiar").addEventListener("click", () => {
   currentLine = 0;
   updateInputs();
 });
-
 
 document.getElementById("btnSimular").addEventListener("click", () => {
   const codigo = editor.getValue();
@@ -119,11 +132,7 @@ document.getElementById("btnSimular").addEventListener("click", () => {
   const errors = PICInterpreter.validate(lines);
   if (errors.length > 0) {
     console.error("Errores de compilación:", errors);
-    alert(
-      errors
-        .map(e => `Línea ${e.line}: ${e.error}`)
-        .join("\n")
-    );
+    alert(errors.map((e) => `Línea ${e.line}: ${e.error}`).join("\n"));
     return;
   }
 
@@ -134,40 +143,31 @@ document.getElementById("btnSimular").addEventListener("click", () => {
   console.log("Código válido. Listo para simular.");
 });
 
-
-
-
-
-
 document.getElementById("btnIndex").addEventListener("click", function () {
-    window.location.href = "index.html";
+  window.location.href = "index.html";
 });
 
+document.querySelectorAll(".sfr-row").forEach((row) => {
+  const hexSpan = row.querySelector("span:nth-child(3)");
+  const bitSpans = row.querySelectorAll(".bits span");
 
-document.querySelectorAll(".sfr-row").forEach(row => {
-    const hexSpan = row.querySelector("span:nth-child(3)");
-    const bitSpans = row.querySelectorAll(".bits span");
+  if (!hexSpan || bitSpans.length !== 8) return;
 
-    if (!hexSpan || bitSpans.length !== 8) return;
+  // Leer hexadecimal
+  const hexValue = hexSpan.textContent.trim();
 
-    // Leer hexadecimal
-    const hexValue = hexSpan.textContent.trim();
+  // Convertir HEX → BIN (8 bits)
+  const bin = parseInt(hexValue, 16).toString(2).padStart(8, "0");
 
-    // Convertir HEX → BIN (8 bits)
-    const bin = parseInt(hexValue, 16)
-        .toString(2)
-        .padStart(8, "0");
+  // Asignar cada bit (mostrar texto solo si es 1)
+  bitSpans.forEach((bitSpan, index) => {
+    const b = bin[index];
+    bitSpan.textContent = b === "1" ? "1" : "";
 
-    // Asignar cada bit
-    bitSpans.forEach((bitSpan, index) => {
-        bitSpan.textContent = bin[index];
-
-        // Opcional: estilos visuales
-        bitSpan.classList.toggle("bit-on", bin[index] === "1");
-        bitSpan.classList.toggle("bit-off", bin[index] === "0");
-    });
+    // Estilos visuales: clase activa cuando es 1
+    bitSpan.classList.toggle("active", b === "1");
+  });
 });
-
 
 function updateSFRRow(row, value) {
   const hexSpan = row.querySelector("span:nth-child(3)");
@@ -177,20 +177,25 @@ function updateSFRRow(row, value) {
   hexSpan.textContent = hex;
 
   const bin = value.toString(2).padStart(8, "0");
-
   bitSpans.forEach((bitSpan, i) => {
-    bitSpan.textContent = bin[i];
-    bitSpan.classList.toggle("active", bin[i] === "1");
+    const b = bin[i];
+    bitSpan.textContent = b === "1" ? "1" : "";
+    bitSpan.classList.toggle("active", b === "1");
   });
 }
 
 function syncSFR(state) {
-  document.querySelectorAll(".sfr-row").forEach(row => {
-    const nameSpan = row.querySelector("span:nth-child(2)");
-    if (!nameSpan) return;
+  document.querySelectorAll(".sfr-row").forEach((row) => {
+    const addrSpan = row.querySelector("span:nth-child(1)");
+    if (!addrSpan) return;
 
-    const regName = nameSpan.textContent.trim();
-    const value = state.registers[regName];
+    // Addr text like "05h" or "00h" or "0Ah"
+    const addrText = addrSpan.textContent.trim().replace(/h$/i, "");
+    const addrNum = parseInt(addrText, 16);
+    if (isNaN(addrNum)) return;
+
+    const key = "0x" + addrNum.toString(16).toUpperCase().padStart(2, "0");
+    const value = state.registers[key];
 
     if (value !== undefined) {
       updateSFRRow(row, value);
@@ -198,10 +203,7 @@ function syncSFR(state) {
   });
 }
 
-
-
 document.querySelector(".play").addEventListener("click", play);
 document.querySelector(".pause").addEventListener("click", pause);
 document.querySelector(".step").addEventListener("click", step);
 document.querySelector(".stop").addEventListener("click", stop);
-
