@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Minijuego 2 — Lógica</title>
+    <link rel="stylesheet" href="../minijuego1/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Minijuego 2 — Lógica (Puzzles y problemas)</h1>
+      <div style=" margin-top: 12px; display: flex; justify-content: flex-end; gap: 8px;">
+      </div>
+      <div class="tabs">
+        <button id="modeBinary" class="active">Binario: detectar LEDs</button>
+        <button id="modeError">Detectar error (Assembler)</button>
+      </div>
+
+      <section id="binarySection">
+        <div class="game">
+          <div class="editor">
+            <label>Instrucciones</label>
+            <p style="color: var(--muted); margin-top: 8px">
+              Se te muestra un valor de <strong>PORTB</strong>
+              Selecciona qué LEDs están encendidos y cuántos hay.
+            </p>
+            <div
+              class="portb-row"
+              style="margin-top: 10px; font-family: monospace"
+            >
+              PORTB = <span id="portbValue">00000000</span>
+              <small
+                id="portbMode"
+                style="color: var(--muted); margin-left: 8px"
+                >BIN</small
+              >
+            </div>
+            <div id="leds" class="leds" style="margin-top: 12px"></div>
+            <div class="controls" style="margin-top: 12px">
+              <button id="newByte">Nuevo valor</button>
+              <button class="nav-btn" onclick="location.href='../../screens/minijuegos.html'">Volver</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="led-wrap">
+              <div id="ledPreview" class="led off" aria-hidden="true"></div>
+              <div class="led-label">Indicador</div>
+            </div>
+            <div id="binaryOutput" class="output" style="margin-top: 12px">
+              <span id="binaryResult" class="result"></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="errorSection" class="hidden">
+        <div class="game">
+          <div class="editor">
+            <label for="asmCode">Código ASM</label>
+            <textarea id="asmCode" spellcheck="false" rows="10"></textarea>
+            <div class="controls">
+              <button id="showHint">Pista</button>
+              <button id="checkAsm">Comprobar</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div id="asmOutput" class="output">
+              <span id="asmResult" class="result"></span>
+            </div>
+            <div
+              id="hintArea"
+              class="hint hidden"
+              style="margin-top: 12px"
+            ></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

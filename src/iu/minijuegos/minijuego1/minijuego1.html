@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Minijuego ASM — Encender LED RB0</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Minijuego: Encender LED en RB0</h1>
+      <p>
+        Objetivo: configurar el puerto para que RB0 sea salida y luego
+        encenderlo.
+      </p>
+
+      <div class="game">
+        <div class="editor">
+          <label for="asm">Código ASM</label>
+          <textarea id="asm" spellcheck="false">
+bsf STATUS, RP0      ; Banco 1
+clrf TRISB           ; PORTB como salida
+bcf STATUS, RP0      ; Banco 0
+
+bsf PORTB, 0         ; Encender LED RB0
+
+end</textarea
+          >
+
+          <div class="controls">
+            <button id="prev">Anterior</button>
+            <button id="check">Verificar</button>
+            <button id="hint">Mostrar pista</button>
+            <button id="next" disabled>Siguiente</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="led-wrap">
+            <div id="led" class="led off" aria-hidden="true"></div>
+            <div class="led-label">RB0</div>
+          </div>
+          <div id="output" class="output"></div>
+        </div>
+      </div>
+
+      <div id="hintText" class="hint hidden">
+        Pista: debes poner TRISB como salida (valor 0) y luego establecer el bit
+        0 de PORTB. Ejemplo simple: <code>clrf TRISB</code> y
+        <code>bsf PORTB, 0</code>.
+      </div>
+
+      <!-- Nivel 2 (oculto hasta completar Nivel 1) -->
+      <section id="level2" class="level2 hidden">
+        <h2>Nivel 2: Control de otro LED (RB1)</h2>
+        <p>Objetivo: configurar TRISB para salida y encender RB1.</p>
+
+        <div class="game">
+          <div class="editor">
+            <label for="asm2">Código ASM (Nivel 2)</label>
+            <textarea id="asm2" spellcheck="false">
+; Nivel 2 - Encender RB1
+bsf STATUS, RP0
+clrf TRISB
+bcf STATUS, RP0
+
+bsf PORTB, 1
+
+end</textarea
+            >
+            <div class="controls">
+              <button id="check2">Verificar Nivel 2</button>
+              <button id="hint2">Mostrar pista</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="led-wrap">
+              <div id="led2" class="led off" aria-hidden="true"></div>
+              <div class="led-label">RB1</div>
+            </div>
+            <div id="output2" class="output"></div>
+          </div>
+        </div>
+
+        <div id="hintText2" class="hint hidden">
+          Pista Nivel 2: Igual que Nivel 1 pero apunta al bit 1. Ejemplo:
+          <code>bsf PORTB, 1</code>.
+        </div>
+      </section>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

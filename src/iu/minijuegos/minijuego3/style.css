@@ -1,0 +1,237 @@
+/* Estilos base para minijuego3 (independiente) */
+:root {
+  --bg-start: #1a237e;
+  --bg-mid: #283593;
+  --bg-end: #3949ab;
+  --accent: #3949ab;
+  --accent-2: #ffd700;
+  --muted: #bbdefb;
+}
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  overflow-x: hidden; /* evitar scroll horizontal */
+  height: 100%;
+  margin: 0;
+  background: linear-gradient(
+    135deg,
+    var(--bg-start) 0%,
+    var(--bg-mid) 50%,
+    var(--bg-end) 100%
+  );
+  color: #fff;
+  font-family: Segoe UI, Roboto, Arial, sans-serif;
+}
+.container,
+.minig3-container {
+  max-width: 1000px;
+  margin: 28px auto;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: visible; /* evitar scroll del contenedor fijo */
+}
+h1 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  color: var(--accent-2);
+}
+label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: block;
+}
+.controls {
+  margin-top: 8px;
+}
+button {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-right: 8px;
+  cursor: pointer;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+.nav-btn {
+  background-color: #3949ab;
+}
+.nav-btn:hover {
+  background-color: #5c6bc0;
+}
+.output {
+  min-height: 60px;
+  width: 100%;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.02);
+  color: #cfe8ff;
+}
+.hint {
+  margin-top: 12px;
+  padding: 10px;
+  background: rgba(255, 215, 0, 0.06);
+  border: 1px solid rgba(255, 215, 0, 0.12);
+  border-radius: 6px;
+  color: #fff8d6;
+}
+.hidden {
+  display: none;
+}
+
+/* Estilos específicos para minijuego3 (Ruleta LED) */
+.minig3-container {
+  margin-left: auto;
+  margin-right: 20px;
+}
+@media (max-width: 900px) {
+  .minig3-container {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Ruleta */
+.roulette {
+  display: grid;
+  grid-template-columns: repeat(3, 80px);
+  grid-template-rows: repeat(3, 80px);
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
+.roulette .slot {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #102030;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.08);
+  transition: box-shadow 120ms, background 120ms, transform 120ms;
+}
+.roulette .slot.on {
+  background: radial-gradient(
+    circle at 35% 30%,
+    #fff8b8,
+    #ffec76 20%,
+    #f59e0b 55%
+  );
+  box-shadow: 0 0 18px 6px rgba(255, 200, 80, 0.14),
+    0 0 40px 18px rgba(245, 158, 11, 0.06);
+  color: #2b1a00;
+  transform: scale(1.08);
+}
+.slot-placeholder {
+  width: 64px;
+  height: 64px;
+}
+
+.controls-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding-bottom: 10px;
+  justify-content: space-around;
+}
+
+#stopBtn {
+  background: #b12a2a;
+}
+
+
+.game {
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 18px;
+}
+.editor {
+  display: flex;
+  flex-direction: column;
+}
+.editor.editor-fixed {
+  position: fixed;
+  left: 20px;
+  top: 20px;
+  bottom: 20px;
+  width: 46%;
+  padding: 18px;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 8px;
+  z-index: 30;
+  
+}
+.output{
+    margin: 20px 0px 20px 0px;
+}
+
+
+/* Textarea ocupa todo el alto del editor fijo */
+textarea#asm {
+  display: block;
+  width: 100%;
+  height: calc(100vh - 160px);
+  max-height: calc(100vh - 120px);
+  min-height: 320px;
+  box-sizing: border-box;
+  padding: 12px;
+  font-family: Consolas, monospace;
+  font-size: 13px;
+  resize: vertical;
+  overflow: auto;
+}
+
+/* Elementos de controles que ahora están en el panel derecho */
+.editor-controls {
+  margin-bottom: 18px;
+  text-align: left;
+}
+.editor-controls label {
+  font-weight: 700;
+  display: block;
+  margin-bottom: 8px;
+}
+.editor-controls .controls {
+  margin-bottom: 8px;
+}
+
+.panel-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ocultar botones inicialmente; el script los mostrará */
+#pressBtn,
+#stopBtn {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .editor.editor-fixed {
+    position: static;
+    width: 100%;
+    padding: 0;
+    background: transparent;
+  }
+  .main-panel {
+    margin-left: 0;
+  }
+  .game {
+    padding-left: 0;
+    align-items: flex-start;
+  }
+  textarea#asm {
+    height: 420px;
+  }
+}

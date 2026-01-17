@@ -1,133 +1,176 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Minijuegos del PIC16784A</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../css/minijuego_syles.css">
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../css/minijuego_syles.css" />
+  </head>
+  <body>
     <div class="container">
-        <header>
-            <h1>Minijuegos del PIC16784A</h1>
-            <p class="subtitle">Un conjunto de desafíos interactivos para aprender programación</p>
-        </header>
-        
-        <main>
-            <div class="slides-container">
-                <!-- Slide 1 -->
-                <div class="slide active" id="slide1">
-                    <div class="slide-header">
-                        <div class="level-number">1</div>
-                        <h2 class="level-title">Nivel 1: Introducción</h2>
-                    </div>
-                    <div class="content-box">
-                        <div class="content-placeholder">
-                            <i class="fas fa-gamepad"></i>
-                            <h3>Representación del primer slide</h3>
-                            <p>Contenido placeholder para el primer nivel. Aquí se mostraría información sobre el primer minijuego, instrucciones o cualquier contenido relacionado con el nivel 1 del proyecto PIC16784A.</p>
-                            <p>Este podría ser un juego de lógica simple, un tutorial interactivo o un desafío de programación básica.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Slide 2 -->
-                <div class="slide" id="slide2">
-                    <div class="slide-header">
-                        <div class="level-number">2</div>
-                        <h2 class="level-title">Nivel 2: Desafíos Intermedios</h2>
-                    </div>
-                    <div class="content-box">
-                        <div class="content-placeholder">
-                            <i class="fas fa-puzzle-piece"></i>
-                            <h3>Contenido del segundo nivel</h3>
-                            <p>En este nivel, los desafíos aumentan en complejidad. Los usuarios podrán aplicar conceptos más avanzados de programación para resolver problemas.</p>
-                            <p>Podría incluir minijuegos de lógica, puzzles de código o simulaciones interactivas.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Slide 3 -->
-                <div class="slide" id="slide3">
-                    <div class="slide-header">
-                        <div class="level-number">3</div>
-                        <h2 class="level-title">Nivel 3: Avanzado</h2>
-                    </div>
-                    <div class="content-box">
-                        <div class="content-placeholder">
-                            <i class="fas fa-robot"></i>
-                            <h3>Desafíos avanzados</h3>
-                            <p>Este nivel contiene los minijuegos más desafiantes del conjunto. Aquí se ponen a prueba todas las habilidades adquiridas en los niveles anteriores.</p>
-                            <p>Los usuarios podrán enfrentarse a problemas complejos que requieren pensamiento algorítmico y optimización de código.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Slide 4 -->
-                <div class="slide" id="slide4">
-                    <div class="slide-header">
-                        <div class="level-number">4</div>
-                        <h2 class="level-title">Nivel 4: Proyecto Final</h2>
-                    </div>
-                    <div class="content-box">
-                        <div class="content-placeholder">
-                            <i class="fas fa-trophy"></i>
-                            <h3>Proyecto integrador</h3>
-                            <p>El nivel final consiste en un proyecto integrador que combina todos los conceptos aprendidos en los niveles anteriores.</p>
-                            <p>Los usuarios crearán su propio minijuego o aplicación utilizando las herramientas y conocimientos adquiridos durante el curso PIC16784A.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="slide-controls">
-                    <button class="nav-btn" id="prevBtn" disabled>
-                        <i class="fas fa-arrow-left"></i> Anterior
-                    </button>
-                    
-                    <div class="slide-indicators">
-                        <div class="indicator active" data-slide="0"></div>
-                        <div class="indicator" data-slide="1"></div>
-                        <div class="indicator" data-slide="2"></div>
-                        <div class="indicator" data-slide="3"></div>
-                    </div>
-                    
-                    <button class="nav-btn" id="nextBtn">
-                        Siguiente <i class="fas fa-arrow-right"></i>
-                    </button>
-                </div>
+      <header>
+        <h1>Minijuegos del PIC16784A</h1>
+        <p class="subtitle">
+          Un conjunto de desafíos interactivos para aprender programación
+        </p>
+      </header>
+
+      <main>
+        <div class="slides-container">
+          <!-- Slide 1 -->
+          <div
+            class="slide active clickable"
+            id="slide1"
+            title="Abrir Nivel 1"
+            onclick="location.href='../minijuegos/minijuego1/minijuego1.html'"
+            role="link"
+            tabindex="0"
+            onkeydown="if(event.key==='Enter'){location.href='../minijuegos/minijuego1/minijuego1.html'}"
+          >
+            <div class="slide-header">
+              <div class="level-number">1</div>
+              <h2 class="level-title">Nivel 1: Introducción</h2>
             </div>
-            
-            <div class="game-cards">
-                <div class="game-card">
-                    <i class="fas fa-code"></i>
-                    <h4>Programación</h4>
-                    <p>Desafíos de código</p>
-                </div>
-                <div class="game-card">
-                    <i class="fas fa-brain"></i>
-                    <h4>Lógica</h4>
-                    <p>Puzzles y problemas</p>
-                </div>
-                <div class="game-card">
-                    <i class="fas fa-lightbulb"></i>
-                    <h4>Creatividad</h4>
-                    <p>Diseño de soluciones</p>
-                </div>
-                <div class="game-card">
-                    <i class="fas fa-chart-line"></i>
-                    <h4>Optimización</h4>
-                    <p>Mejora de algoritmos</p>
-                </div>
+            <div class="content-box">
+              <div class="content-placeholder">
+                <i class="fas fa-gamepad"></i>
+                <h3>Representación del primer slide</h3>
+                <p>
+                  Contenido placeholder para el primer nivel. Aquí se mostraría
+                  información sobre el primer minijuego, instrucciones o
+                  cualquier contenido relacionado con el nivel 1 del proyecto
+                  PIC16784A.
+                </p>
+                <p>
+                  Este podría ser un juego de lógica simple, un tutorial
+                  interactivo o un desafío de programación básica.
+                </p>
+              </div>
             </div>
-        </main>
+          </div>
+
+          <!-- Slide 2 -->
+          <div
+            class="slide clickable"
+            id="slide2"
+            title="Abrir Nivel 2"
+            onclick="location.href='../minijuegos/minijuego2/minijuego2.html'"
+            role="link"
+            tabindex="0"
+            onkeydown="if(event.key==='Enter'){location.href='../minijuegos/minijuego2/minijuego2.html'}"
+          >
+            <div class="slide-header">
+              <div class="level-number">2</div>
+              <h2 class="level-title">Nivel 2: Desafíos Intermedios</h2>
+            </div>
+            <div class="content-box">
+              <div class="content-placeholder">
+                <i class="fas fa-puzzle-piece"></i>
+                <h3>Contenido del segundo nivel</h3>
+                <p>
+                  En este nivel, los desafíos aumentan en complejidad. Los
+                  usuarios podrán aplicar conceptos más avanzados de
+                  programación para resolver problemas.
+                </p>
+                <p>
+                  Podría incluir minijuegos de lógica, puzzles de código o
+                  simulaciones interactivas.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 3 -->
+          <div
+            class="slide clickable"
+            id="slide3"
+            title="Abrir Nivel 3"
+            onclick="location.href='../minijuegos/minijuego3/minijuego3.html'"
+            role="link"
+            tabindex="0"
+            onkeydown="if(event.key==='Enter'){location.href='../minijuegos/minijuego3/minijuego3.html'}"
+          >
+            <div class="slide-header">
+              <div class="level-number">3</div>
+              <h2 class="level-title">Nivel 3: Avanzado</h2>
+            </div>
+            <div class="content-box">
+              <div class="content-placeholder">
+                <i class="fas fa-robot"></i>
+                <h3>Desafíos avanzados</h3>
+                <p>
+                  Este nivel contiene los minijuegos más desafiantes del
+                  conjunto. Aquí se ponen a prueba todas las habilidades
+                  adquiridas en los niveles anteriores.
+                </p>
+                <p>
+                  Los usuarios podrán enfrentarse a problemas complejos que
+                  requieren pensamiento algorítmico y optimización de código.
+                </p>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="slide-controls">
+            <button class="nav-btn" id="prevBtn" disabled>
+              <i class="fas fa-arrow-left"></i> Anterior
+            </button>
+
+            <div class="slide-indicators">
+              <div class="indicator active" data-slide="0"></div>
+              <div class="indicator" data-slide="1"></div>
+              <div class="indicator" data-slide="2"></div>
+            </div>
+
+            <button class="nav-btn" id="nextBtn">
+              Siguiente <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="game-cards">
+          <div class="game-card">
+            <i class="fas fa-code"></i>
+            <h4>Programación</h4>
+            <p>Desafíos de código</p>
+          </div>
+          <div class="game-card">
+            <i class="fas fa-brain"></i>
+            <h4>Lógica</h4>
+            <p>Puzzles y problemas</p>
+          </div>
+          <div class="game-card">
+            <i class="fas fa-lightbulb"></i>
+            <h4>Creatividad</h4>
+            <p>Diseño de soluciones</p>
+          </div>
+        </div>
+        <div class="game-cards" onclick="location.href='../screens/index.html'" >
+          <div class="game-card">
+            <i class="fas fa-cogs"></i>
+            <h4>Volver</h4>
+
+          </div>
         
-        <footer>
-            <p>Proyecto PIC16784A • Minijuegos educativos • Todos los derechos reservados</p>
-            <p>Desarrollado para fines educativos y de aprendizaje de programación</p>
-        </footer>
+        </div>
+      </main>
+      
+      <footer>
+        <p>
+          Proyecto PIC16784A • Minijuegos educativos • Todos los derechos
+          reservados
+        </p>
+        <p>
+          Desarrollado para fines educativos y de aprendizaje de programación
+        </p>
+      </footer>
     </div>
 
     <script src="../js/minijuegos_script.js"></script>
-</body>
+  </body>
 </html>

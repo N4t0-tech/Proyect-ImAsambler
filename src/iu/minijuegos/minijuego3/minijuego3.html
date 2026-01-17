@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Minijuego 3 — Ruleta LED</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div class="container minig3-container">
+
+ <div class="editor editor-fixed">
+    <h1> Crea tu codigo aqui:</h1>
+          <textarea id="asm" spellcheck="false">
+
+inicio
+            ; Configuración de puertos
+            bsf     STATUS, RP0     ; Banco 1
+            movlw   b'00000001'
+            movwf   TRISA           ; RA0 entrada
+            clrf    TRISB           ; PORTB salida
+            bcf     STATUS, RP0     ; Banco 0
+
+            ; LED inicial
+            movlw   b'00000001'
+            movwf   PORTB
+
+ruleta
+            call    delay           ; Controla velocidad
+            rlf     PORTB,1         ; Mover LED a la izquierda
+
+            ; Si se sale por RB7, vuelve a RB0
+            btfsc   STATUS,C
+            movlw   b'00000001'
+            btfsc   STATUS,C
+            movwf   PORTB
+
+            ; ¿Botón presionado?
+            btfss   PORTA,0
+            goto    ruleta
+
+fin
+            ; El LED queda encendido
+            goto    fin
+
+delay
+            movlw   d'150'
+            movwf   delay_cnt
+
+d1
+            decfsz  delay_cnt,1
+            goto    d1
+            return
+
+            end
+        </textarea>
+
+
+        </div> 
+
+      <h1>Minijuego: Rueda LED — "Let's go gambling"</h1>
+      <p>
+        Objetivo: programa una ruleta de LEDs (PORTB) que rote y se detenga
+        cuando se presione un botón (`RA0`). Simularemos la pulsación con un
+        botón en la interfaz.
+      </p>
+
+      
+      <div class="game">
+
+        <div class="main-panel">
+
+            <div class="roulette" id="roulette">
+              <!-- grid 3x3, usaremos las 8 posiciones alrededor del centro -->
+              <div class="slot" data-pos="0"></div>
+              <div class="slot" data-pos="1"></div>
+              <div class="slot" data-pos="2"></div>
+              <div class="slot" data-pos="3"></div>
+              <div class="slot-placeholder">&nbsp;</div>
+              <div class="slot" data-pos="4"></div>
+              <div class="slot" data-pos="5"></div>
+              <div class="slot" data-pos="6"></div>
+              <div class="slot" data-pos="7"></div>
+            </div>
+
+            <div id="output" class="output">Estado: esperando verificación</div>
+            <div class="controls-row">
+              <button id="prev">Anterior</button>
+              <button id="check">Verificar</button>
+              <button id="hint">Mostrar pista</button>
+            </div>
+          
+          <div id="hintText" class="hint hidden">
+            Pista: necesitas configurar TRISB como salida (ej:
+            <code>clrf TRISB</code>), rotar PORTB (ej: <code>rlf PORTB,1</code>)
+            y comprobar el botón con <code>btfss PORTA,0</code> antes de volver
+            al bucle.
+          </div>
+            <div class="controls-row">
+              <button id="pressBtn" class="nav-btn">Presionar Botón (RA0)</button>
+              <button id="stopBtn">Forzar detener</button>
+            </div>
+        
+
+        </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
