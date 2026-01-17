@@ -23,7 +23,14 @@
     });
   }
 })();
-
+(function () {
+  const btn = document.getElementById("btnDocumentacion");
+  if (btn) {
+    btn.addEventListener("click", function () {
+      window.location.href = "doc.html";
+    });
+  }
+})();
 
 
 

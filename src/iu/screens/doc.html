@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIC16F84A - Guía Sencilla</title>
+    <link rel="stylesheet" href="../css/doc.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1><i class="fas fa-microchip"></i> PIC16F84A - Guía Sencilla</h1>
+            <p>Documentación para ensamblador y simulador</p>
+        </header>
+
+        <!-- Menú lateral -->
+        <nav class="menu">
+            <button class="menu-btn" onclick="showSection('intro')">
+                <i class="fas fa-home"></i> Introducción
+            </button>
+            <button class="menu-btn" onclick="showSection('pic')">
+                <i class="fas fa-info-circle"></i> PIC16F84A
+            </button>
+            <button class="menu-btn" onclick="showSection('asm')">
+                <i class="fas fa-code"></i> Ensamblador
+            </button>
+            <button class="menu-btn" onclick="showSection('sim')">
+                <i class="fas fa-desktop"></i> Simulador
+            </button>
+            <button class="menu-btn" onclick="showSection('tools')">
+                <i class="fas fa-tools"></i> Herramientas
+            </button>
+            <button class="menu-btn" onclick="showSection('examples')">
+                <i class="fas fa-file-code"></i> Ejemplos
+            </button>
+            
+            <div class="theme-switch">
+                <label class="switch">
+                    <input type="checkbox" id="theme-checkbox">
+                    <span class="slider"></span>
+                </label>
+                <span>Modo oscuro</span>
+            </div>
+            <button class="menu-btn" onclick="location.href='../screens/index.html'">
+                <i class="fa-solid fa-arrow-right-to-bracket"></i> Volver al inicio
+            </button>
+        </nav>
+
+        <!-- Contenido principal -->
+        <main class="content">
+            <!-- Introducción -->
+            <section id="intro" class="section active">
+                <h2><i class="fas fa-home"></i> Introducción</h2>
+                <p>Esta guía explica cómo crear un ensamblador y simulador básico para el microcontrolador PIC16F84A, ideal para aprendizaje.</p>
+                
+                <div class="card">
+                    <h3>¿Qué vamos a hacer?</h3>
+                    <ul>
+                        <li>Entender el PIC16F84A (funciones básicas)</li>
+                        <li>Aprender ensamblador PIC (lo esencial)</li>
+                        <li>Conocer herramientas para programar</li>
+                        <li>Crear un simulador sencillo</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>¿Para quién es esta guía?</h3>
+                    <ul>
+                        <li>Estudiantes de electrónica</li>
+                        <li>Programadores que quieren aprender ensamblador</li>
+                        <li>Personas interesadas en microcontroladores</li>
+                        <li>Docentes que buscan material educativo</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- PIC16F84A -->
+            <section id="pic" class="section">
+                <h2><i class="fas fa-info-circle"></i> PIC16F84A Básico</h2>
+                
+                <div class="card">
+                    <h3>Características principales</h3>
+                    <div class="features">
+                        <div class="feature">
+                            <i class="fas fa-microchip"></i>
+                            <span>8-bit CPU</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-memory"></i>
+                            <span>1K programa<br>68 bytes RAM</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-clock"></i>
+                            <span>20 MHz max<br>1 ciclo por instrucción</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-plug"></i>
+                            <span>13 pines I/O<br>2 puertos</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Partes importantes</h3>
+                    <ul>
+                        <li><strong>CPU:</strong> Procesa instrucciones (35 tipos diferentes)</li>
+                        <li><strong>Memoria programa:</strong> Guarda el código (1024 palabras de 14 bits)</li>
+                        <li><strong>Memoria datos (RAM):</strong> Variables temporales (68 bytes)</li>
+                        <li><strong>Puertos A y B:</strong> Para conectar LEDs, botones, etc.</li>
+                        <li><strong>Timer0:</strong> Contador/retardos</li>
+                        <li><strong>WDT:</strong> Reinicio automático si se bloquea</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Registros principales</h3>
+                    <table>
+                        <tr>
+                            <th>Registro</th>
+                            <th>Función</th>
+                        </tr>
+                        <tr>
+                            <td>W</td>
+                            <td>Registro de trabajo (acumulador)</td>
+                        </tr>
+                        <tr>
+                            <td>STATUS</td>
+                            <td>Banderas y control de banco</td>
+                        </tr>
+                        <tr>
+                            <td>PC</td>
+                            <td>Contador de programa</td>
+                        </tr>
+                        <tr>
+                            <td>PORTA/PORTB</td>
+                            <td>Puertos de entrada/salida</td>
+                        </tr>
+                        <tr>
+                            <td>TMR0</td>
+                            <td>Timer/contador</td>
+                        </tr>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Ensamblador -->
+            <section id="asm" class="section">
+                <h2><i class="fas fa-code"></i> Ensamblador PIC</h2>
+                
+                <div class="card">
+                    <h3>Instrucciones básicas</h3>
+                    <p>El PIC16F84A tiene 35 instrucciones. Estas son las más usadas:</p>
+                    
+                    <div class="code-example">
+                        <h4>Mover datos</h4>
+                        <pre>MOVLW 0x05    ; Cargar 5 en W (W = 5)
+MOVWF PORTA   ; Mover W a PORTA (PORTA = 5)</pre>
+                    </div>
+                    
+                    <div class="code-example">
+                        <h4>Operaciones</h4>
+                        <pre>ADDLW 0x03    ; Sumar 3 a W (W = W + 3)
+SUBLW 0x0A    ; Restar W de 10 (W = 10 - W)
+ANDLW 0x0F    ; AND bit a bit (W = W & 0x0F)</pre>
+                    </div>
+                    
+                    <div class="code-example">
+                        <h4>Saltos y llamadas</h4>
+                        <pre>GOTO etiqueta ; Saltar a etiqueta
+CALL subrutina; Llamar subrutina
+RETURN        ; Volver de subrutina</pre>
+                    </div>
+                    
+                    <div class="code-example">
+                        <h4>Bits</h4>
+                        <pre>BSF PORTA, 0  ; Poner bit 0 de PORTA en 1
+BCF PORTA, 1  ; Poner bit 1 de PORTA en 0
+BTFSC PORTA,2 ; Saltar siguiente si bit 2=0</pre>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Estructura de un programa</h3>
+                    <pre class="full-code">; Programa ejemplo - Parpadeo de LED
+; LED conectado a RB0
+
+    ORG 0x0000      ; Empieza en dirección 0
+    GOTO INICIO     ; Saltar al inicio
+
+INICIO:
+    BSF STATUS,5    ; Ir al banco 1
+    CLRF TRISB      ; PORTB como salidas
+    BCF STATUS,5    ; Volver al banco 0
+    
+BUCLE:
+    MOVLW 0x01      ; Encender RB0
+    MOVWF PORTB
+    CALL RETARDO    ; Esperar
+    
+    CLRF PORTB      ; Apagar RB0
+    CALL RETARDO    ; Esperar
+    
+    GOTO BUCLE      ; Repetir
+
+RETARDO:
+    ; Código de retardo
+    RETURN
+    
+    END             ; Fin del programa</pre>
+                </div>
+            </section>
+
+            <!-- Simulador -->
+            <section id="sim" class="section">
+                <h2><i class="fas fa-desktop"></i> Simulador Básico</h2>
+                
+                <div class="card">
+                    <h3>¿Qué debe hacer un simulador?</h3>
+                    <ul>
+                        <li>Leer código ensamblador</li>
+                        <li>Ejecutar instrucciones paso a paso</li>
+                        <li>Mostrar estado de registros y memoria</li>
+                        <li>Simular puertos (entradas/salidas)</li>
+                        <li>Mostrar errores si los hay</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Partes del simulador</h3>
+                    <div class="simulator-parts">
+                        <div class="part">
+                            <h4><i class="fas fa-brain"></i> CPU</h4>
+                            <p>Ejecuta instrucciones, actualiza registros</p>
+                        </div>
+                        <div class="part">
+                            <h4><i class="fas fa-memory"></i> Memoria</h4>
+                            <p>Almacena programa y datos</p>
+                        </div>
+                        <div class="part">
+                            <h4><i class="fas fa-sliders-h"></i> Puertos I/O</h4>
+                            <p>Simula entradas y muestra salidas</p>
+                        </div>
+                        <div class="part">
+                            <h4><i class="fas fa-eye"></i> Interfaz</h4>
+                            <p>Muestra todo de forma entendible</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Ejemplo de código de simulador</h3>
+                    <div class="code-example">
+                        <pre>// Ejecutar una instrucción
+function ejecutarInstruccion() {
+    // 1. Leer instrucción
+    let instruccion = memoria[PC];
+    
+    // 2. Decodificar
+    let opcode = instruccion >> 7;
+    
+    // 3. Ejecutar según opcode
+    switch(opcode) {
+        case 0x00: // NOP - No hacer nada
+            PC++;
+            break;
+        case 0x08: // MOVWF
+            let registro = instruccion & 0x7F;
+            memoria[registro] = W;
+            PC++;
+            break;
+        // ... más instrucciones
+    }
+    
+    // 4. Actualizar interfaz
+    actualizarPantalla();
+}</pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Herramientas -->
+            <section id="tools" class="section">
+                <h2><i class="fas fa-tools"></i> Herramientas</h2>
+                
+                <div class="card">
+                    <h3>Para programar PIC reales</h3>
+                    <div class="tool">
+                        <h4><i class="fas fa-desktop"></i> MPLAB X IDE</h4>
+                        <p>Entorno oficial de Microchip (gratuito)</p>
+                    </div>
+                    <div class="tool">
+                        <h4><i class="fas fa-terminal"></i> pic-as (XC8)</h4>
+                        <p>Ensamblador moderno para línea de comandos</p>
+                    </div>
+                    <div class="tool">
+                        <h4><i class="fas fa-code-branch"></i> gpasm (gputils)</h4>
+                        <p>Ensamblador gratuito y de código abierto</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Para simular</h3>
+                    <div class="tool">
+                        <h4><i class="fas fa-laptop-code"></i> MPLAB Simulator</h4>
+                        <p>Simulador oficial (viene con MPLAB)</p>
+                    </div>
+                    <div class="tool">
+                        <h4><i class="fas fa-code"></i> gpsim</h4>
+                        <p>Simulador gratuito para Linux</p>
+                    </div>
+                    <div class="tool">
+                        <h4><i class="fas fa-globe"></i> Simuladores web</h4>
+                        <p>Simuladores que funcionan en el navegador</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Para nuestro proyecto</h3>
+                    <p>Podemos crear nuestro simulador con:</p>
+                    <ul>
+                        <li><strong>JavaScript/TypeScript:</strong> Para que funcione en navegador</li>
+                        <li><strong>Electron:</strong> Para aplicación de escritorio</li>
+                        <li><strong>Python:</strong> Para versión de consola</li>
+                        <li><strong>Canvas/HTML:</strong> Para mostrar registros y memoria</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Ejemplos -->
+            <section id="examples" class="section">
+                <h2><i class="fas fa-file-code"></i> Ejemplos Prácticos</h2>
+                
+                <div class="card">
+                    <h3>Ejemplo 1: Parpadeo de LED</h3>
+                    <pre class="full-code">; LED en RB0 parpadea cada segundo aprox.
+
+INICIO:
+    BSF STATUS,5    ; Banco 1
+    CLRF TRISB      ; PORTB como salidas
+    BCF STATUS,5    ; Banco 0
+    
+PARPADEA:
+    BSF PORTB,0     ; Encender LED
+    CALL RETARDO
+    BCF PORTB,0     ; Apagar LED
+    CALL RETARDO
+    GOTO PARPADEA   ; Repetir
+
+RETARDO:
+    MOVLW 0xFF
+    MOVWF CONT1
+RETARDO1:
+    MOVLW 0xFF
+    MOVWF CONT2
+RETARDO2:
+    DECFSZ CONT2,F
+    GOTO RETARDO2
+    DECFSZ CONT1,F
+    GOTO RETARDO1
+    RETURN</pre>
+                </div>
+                
+                <div class="card">
+                    <h3>Ejemplo 2: Contador binario</h3>
+                    <pre class="full-code">; Contador binario en PORTB (LEDs 0-7)
+
+    ORG 0x00
+    GOTO INICIO
+    
+INICIO:
+    BSF STATUS,5    ; Banco 1
+    CLRF TRISB      ; PORTB como salidas
+    BCF STATUS,5    ; Banco 0
+    
+    CLRF PORTB      ; Empezar en 0
+    
+CONTAR:
+    INCF PORTB,F    ; Incrementar PORTB
+    CALL RETARDO    ; Esperar
+    GOTO CONTAR     ; Seguir contando
+    
+RETARDO:
+    ; Código de retardo (similar al anterior)
+    RETURN</pre>
+                </div>
+                
+                <div class="card">
+                    <h3>Ejemplo 3: Leer botón</h3>
+                    <pre class="full-code">; Si botón en RA0 está presionado, 
+; encender LED en RB0
+
+INICIO:
+    BSF STATUS,5    ; Banco 1
+    MOVLW 0x01      ; RA0 entrada, otros salidas
+    MOVWF TRISA
+    CLRF TRISB      ; PORTB salidas
+    BCF STATUS,5    ; Banco 0
+    
+BUCLE:
+    BTFSC PORTA,0   ; Si RA0=0 (botón presionado)
+    GOTO APAGADO    ; Si no, ir a apagar
+    
+ENCENDIDO:
+    BSF PORTB,0     ; Encender LED
+    GOTO BUCLE
+    
+APAGADO:
+    BCF PORTB,0     ; Apagar LED
+    GOTO BUCLE</pre>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Guía básica para PIC16F84A - Ensamblador y Simulador</p>
+            <p>Para uso educativo - Basado en documentación oficial de Microchip</p>
+            <div class="footer-icons">
+                <i class="fas fa-book"></i>
+                <i class="fas fa-code"></i>
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+        </footer>
+    </div>
+
+    <script src="../js/doc.js"></script>
+</body>
+</html>
