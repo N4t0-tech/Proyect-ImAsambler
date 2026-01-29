@@ -1,47 +1,22 @@
+/**
+ * @fileoverview Script UI del compilador ASM
+ * Usa las definiciones compartidas de core/instructions.js
+ */
+
 // Variables globales
 let currentCode = "";
 let currentHex = "";
 let currentErrors = [];
 
-// Categorías de instrucciones
-const INSTRUCTION_CATEGORIES = {
-  "Operaciones con archivos": [
-    "ADDWF",
-    "ANDWF",
-    "CLRF",
-    "CLRW",
-    "COMF",
-    "DECF",
-    "DECFSZ",
-    "INCF",
-    "INCFSZ",
-    "IORWF",
-    "MOVF",
-    "MOVWF",
-    "RLF",
-    "RRF",
-    "SUBWF",
-    "SWAPF",
-    "XORWF",
-  ],
-  "Operaciones con bits": ["BCF", "BSF", "BTFSC", "BTFSS"],
-  "Literales y control": [
-    "ADDLW",
-    "ANDLW",
-    "CALL",
-    "CLRWDT",
-    "GOTO",
-    "IORLW",
-    "MOVLW",
-    "RETFIE",
-    "RETLW",
-    "RETURN",
-    "SLEEP",
-    "SUBLW",
-    "XORLW",
-  ],
-  Otras: ["NOP"],
-};
+// Usa las categorías del core si están disponibles
+const INSTRUCTION_CATEGORIES = typeof PIC_INSTRUCTION_CATEGORIES !== 'undefined'
+  ? PIC_INSTRUCTION_CATEGORIES
+  : {
+    "Operaciones con archivos": ["ADDWF", "ANDWF", "CLRF", "CLRW", "COMF", "DECF", "DECFSZ", "INCF", "INCFSZ", "IORWF", "MOVF", "MOVWF", "RLF", "RRF", "SUBWF", "SWAPF", "XORWF"],
+    "Operaciones con bits": ["BCF", "BSF", "BTFSC", "BTFSS"],
+    "Literales y control": ["ADDLW", "ANDLW", "CALL", "CLRWDT", "GOTO", "IORLW", "MOVLW", "RETFIE", "RETLW", "RETURN", "SLEEP", "SUBLW", "XORLW"],
+    "Otras": ["NOP"]
+  };
 
 // Elementos del DOM
 const codeEditor = document.getElementById("codeEditor");

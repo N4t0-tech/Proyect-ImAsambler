@@ -1,70 +1,24 @@
-// Compilador ASM para PIC16F84A
+/**
+ * @fileoverview Compilador ASM para PIC16F84A
+ * Usa las definiciones compartidas de core/instructions.js
+ */
 
-const INSTRUCTION_SET = {
-    // Operaciones con archivos de registro orientadas a bytes
-    'ADDWF': { opcode: 0x0700, operands: 2, description: 'Sumar W y f' },
-    'ANDWF': { opcode: 0x0500, operands: 2, description: 'AND lógico entre W y f' },
-    'CLRF': { opcode: 0x0180, operands: 1, description: 'Limpiar registro f (poner en 0)' },
-    'CLRW': { opcode: 0x0100, operands: 0, description: 'Limpiar registro W (poner en 0)' },
-    'COMF': { opcode: 0x0900, operands: 2, description: 'Complementar f (invertir bits)' },
-    'DECF': { opcode: 0x0300, operands: 2, description: 'Decrementar f (restar 1)' },
-    'DECFSZ': { opcode: 0x0B00, operands: 2, description: 'Decrementar f, saltar si es 0' },
-    'INCF': { opcode: 0x0A00, operands: 2, description: 'Incrementar f (sumar 1)' },
-    'INCFSZ': { opcode: 0x0F00, operands: 2, description: 'Incrementar f, saltar si es 0' },
-    'IORWF': { opcode: 0x0400, operands: 2, description: 'OR inclusivo entre W y f' },
-    'MOVF': { opcode: 0x0800, operands: 2, description: 'Mover f a destino' },
-    'MOVWF': { opcode: 0x0080, operands: 1, description: 'Mover W al registro f' },
-    'NOP': { opcode: 0x0000, operands: 0, description: 'No operación (no hace nada)' },
-    'RLF': { opcode: 0x0D00, operands: 2, description: 'Rotar f a la izquierda a través del carry' },
-    'RRF': { opcode: 0x0C00, operands: 2, description: 'Rotar f a la derecha a través del carry' },
-    'SUBWF': { opcode: 0x0200, operands: 2, description: 'Restar W de f' },
-    'SWAPF': { opcode: 0x0E00, operands: 2, description: 'Intercambiar nibbles en f' },
-    'XORWF': { opcode: 0x0600, operands: 2, description: 'XOR exclusivo entre W y f' },
-    
-    // Operaciones con bits
-    'BCF': { opcode: 0x1000, operands: 2, description: 'Limpiar bit en f (poner en 0)' },
-    'BSF': { opcode: 0x1400, operands: 2, description: 'Establecer bit en f (poner en 1)' },
-    'BTFSC': { opcode: 0x1800, operands: 2, description: 'Probar bit en f, saltar si está en 0' },
-    'BTFSS': { opcode: 0x1C00, operands: 2, description: 'Probar bit en f, saltar si está en 1' },
-    
-    // Operaciones con literales y control
-    'ADDLW': { opcode: 0x3E00, operands: 1, description: 'Sumar literal a W' },
-    'ANDLW': { opcode: 0x3900, operands: 1, description: 'AND lógico entre literal y W' },
-    'CALL': { opcode: 0x2000, operands: 1, description: 'Llamar subrutina' },
-    'CLRWDT': { opcode: 0x0064, operands: 0, description: 'Limpiar temporizador watchdog' },
-    'GOTO': { opcode: 0x2800, operands: 1, description: 'Saltar a dirección' },
-    'IORLW': { opcode: 0x3800, operands: 1, description: 'OR inclusivo entre literal y W' },
-    'MOVLW': { opcode: 0x3000, operands: 1, description: 'Mover literal a W' },
-    'RETFIE': { opcode: 0x0009, operands: 0, description: 'Retornar de interrupción' },
-    'RETLW': { opcode: 0x3400, operands: 1, description: 'Retornar con literal en W' },
-    'RETURN': { opcode: 0x0008, operands: 0, description: 'Retornar de subrutina' },
-    'SLEEP': { opcode: 0x0063, operands: 0, description: 'Entrar en modo de bajo consumo' },
-    'SUBLW': { opcode: 0x3C00, operands: 1, description: 'Restar W del literal' },
-    'XORLW': { opcode: 0x3A00, operands: 1, description: 'XOR exclusivo entre literal y W' }
-};
+// Alias para compatibilidad con código existente
+// PIC_INSTRUCTIONS se carga desde core/instructions.js
+const INSTRUCTION_SET = typeof PIC_INSTRUCTIONS !== 'undefined' ? PIC_INSTRUCTIONS : {};
 
+// Usa PICUtils.parseValue del core si está disponible
 function parseNumber(str) {
+    if (typeof PICUtils !== 'undefined') {
+        return PICUtils.parseValue(str);
+    }
+    // Fallback para compatibilidad
     if (!str) return 0;
-    
-    str = str.trim().replace(/,/g, '');
-    
-    // Hexadecimal
-    if (str.startsWith('0x') || str.startsWith('0X')) {
-        return parseInt(str.substring(2), 16);
-    }
-    
-    // Binary
-    if (str.startsWith('0b') || str.startsWith('0B')) {
-        return parseInt(str.substring(2), 2);
-    }
-    
-    // Hexadecimal with H suffix
-    if (str.endsWith('h') || str.endsWith('H')) {
-        return parseInt(str.substring(0, str.length - 1), 16);
-    }
-    
-    // Decimal
-    return parseInt(str, 10);
+    str = str.toString().trim().replace(/,/g, '');
+    if (str.startsWith('0x') || str.startsWith('0X')) return parseInt(str.substring(2), 16);
+    if (str.startsWith('0b') || str.startsWith('0B')) return parseInt(str.substring(2), 2);
+    if (/^[0-9A-Fa-f]+h$/i.test(str)) return parseInt(str.slice(0, -1), 16);
+    return parseInt(str, 10) || 0;
 }
 
 function parseOperand(operand) {
@@ -76,15 +30,17 @@ function parseOperand(operand) {
     return parseNumber(operand);
 }
 
+// Usa PICUtils.parseDestination del core si está disponible
 function parseDestination(dest) {
-    if (!dest) return 0; // Default to W
-    
-    dest = dest.trim().toUpperCase().replace(/,/g, '');
-    
-    if (dest === 'F' || dest === '1') return 1;
-    if (dest === 'W' || dest === '0') return 0;
-    
-    return parseInt(dest, 10);
+    if (typeof PICUtils !== 'undefined') {
+        return PICUtils.parseDestination(dest);
+    }
+    // Fallback
+    if (!dest) return 0;
+    const d = dest.toString().trim().toUpperCase().replace(/,/g, '');
+    if (d === 'F' || d === '1') return 1;
+    if (d === 'W' || d === '0') return 0;
+    return parseInt(d, 10) || 0;
 }
 
 function formatHexLine(address, machineCode) {

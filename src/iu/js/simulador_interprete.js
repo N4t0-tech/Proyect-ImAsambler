@@ -1,48 +1,47 @@
-// Helpers:
-// parseValue(token): convierte un token numérico a entero. Acepta 0xNN, NNh, 0b..., o decimal.
-// normalizeReg(token): normaliza un operando de registro a la clave "0xNN".
-// setZeroFlag(state,val): ajusta el bit Z en STATUS/0x03 según si val == 0.
-//
-// Mapeo hacia la UI del simulador:
-// - Si una instrucción cambia `PIC_STATE.W`, la UI leerá `getState().W` y actualizará
-//   el `W Register` (bits y color).
-// - Si una instrucción escribe en `PIC_STATE.registers['0xNN']`, la UI actualizará
-//   la fila SFR correspondiente vía `syncSFR()`.
-// - Las banderas se almacenan en `STATUS` y `0x03`; `setZeroFlag` actualiza ambas.
-// - Cambios en `PIC_STATE.PC` indican a la UI qué línea ejecutar/mostrar como siguiente.
+/**
+ * @fileoverview Intérprete del PIC16F84A para el simulador
+ * Usa las utilidades compartidas de core/utils.js y core/pic-state.js
+ */
 
-function parseValue(token) {
-  if (token === undefined || token === null) return 0;
-  const s = token.toString().trim();
-  if (s.startsWith("0x") || s.startsWith("0X"))
-    return parseInt(s.substring(2), 16);
-  if (s.startsWith("0b") || s.startsWith("0B"))
-    return parseInt(s.substring(2), 2);
-  if (/^[0-9A-Fa-f]+h$/i.test(s)) return parseInt(s.slice(0, -1), 16);
-  return parseInt(s, 10);
-}
+// ═══════════════════════════════════════════════════════════════
+// HELPERS - Usa el core si está disponible, sino fallback local
+// ═══════════════════════════════════════════════════════════════
 
-function normalizeReg(token) {
-  if (token === undefined || token === null) return token;
-  const s = token.toString().trim();
-  const n = parseValue(s);
-  if (!isNaN(n))
-    return "0x" + (n & 0xff).toString(16).toUpperCase().padStart(2, "0");
-  return s.toUpperCase();
-}
+// parseValue: convierte token numérico a entero (0xNN, NNh, 0b..., decimal)
+const parseValue = typeof PICUtils !== 'undefined'
+  ? PICUtils.parseValue
+  : function(token) {
+      if (token === undefined || token === null) return 0;
+      const s = token.toString().trim();
+      if (s.startsWith("0x") || s.startsWith("0X")) return parseInt(s.substring(2), 16);
+      if (s.startsWith("0b") || s.startsWith("0B")) return parseInt(s.substring(2), 2);
+      if (/^[0-9A-Fa-f]+h$/i.test(s)) return parseInt(s.slice(0, -1), 16);
+      return parseInt(s, 10);
+    };
 
-function setZeroFlag(state, val) {
-  // Ajusta el bit Z (bit 2) en STATUS/0x03 si `val` es cero.
-  // El intérprete mantiene STATUS tanto en "0x03" como en "STATUS" por compatibilidad con UI.
-  const bit = 1 << 2; // Z flag in STATUS (bit 2)
-  const cur = state.registers["0x03"] || state.registers["STATUS"] || 0;
-  const newVal = (val & 0xff) === 0 ? cur | bit : cur & ~bit;
-  // store back in both possible keys for compatibility
-  state.registers["0x03"] = newVal;
-  state.registers["STATUS"] = newVal;
-}
+// normalizeReg: normaliza registro a formato "0xNN"
+const normalizeReg = typeof PICUtils !== 'undefined'
+  ? PICUtils.normalizeReg
+  : function(token) {
+      if (token === undefined || token === null) return token;
+      const s = token.toString().trim();
+      const n = parseValue(s);
+      if (!isNaN(n)) return "0x" + (n & 0xff).toString(16).toUpperCase().padStart(2, "0");
+      return s.toUpperCase();
+    };
 
-// Helpers para flags C (bit0) y DC (bit1)
+// ═══════════════════════════════════════════════════════════════
+// ESTADO DEL PIC - Usa PICState del core o estado local
+// ═══════════════════════════════════════════════════════════════
+
+const PIC_STATE = typeof PICState !== 'undefined'
+  ? PICState.state
+  : { PC: 0, W: 0, registers: {}, stack: [] };
+
+// ═══════════════════════════════════════════════════════════════
+// FUNCIONES DE FLAGS
+// ═══════════════════════════════════════════════════════════════
+
 function getStatus(state) {
   return state.registers["0x03"] || state.registers["STATUS"] || 0;
 }
@@ -59,35 +58,24 @@ function setFlag(state, bit, enabled) {
 }
 
 function getFlag(state, bit) {
-  const cur = getStatus(state);
-  return !!(cur & (1 << bit));
+  return !!(getStatus(state) & (1 << bit));
+}
+
+function setZeroFlag(state, val) {
+  setFlag(state, 2, (val & 0xff) === 0);
 }
 
 function updateFlagsAdd(state, a, b, resultFull) {
-  // a + b = resultFull (may exceed 8 bits)
-  const result = resultFull & 0xff;
-  // C: carry out of bit7
-  setFlag(state, 0, resultFull > 0xff);
-  // DC: carry from bit3
-  setFlag(state, 1, (a & 0x0f) + (b & 0x0f) > 0x0f);
-  setZeroFlag(state, result);
+  setFlag(state, 0, resultFull > 0xff);           // C: carry
+  setFlag(state, 1, (a & 0x0f) + (b & 0x0f) > 0x0f); // DC: digit carry
+  setZeroFlag(state, resultFull & 0xff);          // Z: zero
 }
 
 function updateFlagsSub(state, a, b, resultFull) {
-  // a - b = resultFull (signed or with borrow); for C flag: set if no borrow (a >= b)
-  const result = resultFull & 0xff;
-  setFlag(state, 0, (a & 0xff) >= (b & 0xff));
-  // DC: borrow from bit4 -> set if (a_low >= b_low)
-  setFlag(state, 1, (a & 0x0f) >= (b & 0x0f));
-  setZeroFlag(state, result);
+  setFlag(state, 0, (a & 0xff) >= (b & 0xff));    // C: no borrow
+  setFlag(state, 1, (a & 0x0f) >= (b & 0x0f));    // DC: no digit borrow
+  setZeroFlag(state, resultFull & 0xff);          // Z: zero
 }
-
-const PIC_STATE = {
-  PC: 0,
-  W: 0,
-  registers: {},
-  stack: [],
-};
 
 function parseLine(line) {
   const clean = line.split(";")[0].trim();
