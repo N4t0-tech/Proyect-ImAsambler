@@ -182,10 +182,16 @@ function compileASM(asmCode) {
             let machineCode = instrDef.opcode;
             
             if (instrDef.operands >= 1) {
-                // Resolve label if operand is a known label name
                 let rawOp1 = parts[1];
-                if (rawOp1 && labelTable[rawOp1.toUpperCase().replace(/,/g, '')] !== undefined) {
-                    rawOp1 = labelTable[rawOp1.toUpperCase().replace(/,/g, '')].toString();
+                if (rawOp1) {
+                    const key = rawOp1.toUpperCase().replace(/,/g, '');
+                    if (labelTable[key] !== undefined) {
+                        rawOp1 = labelTable[key].toString();
+                    } else if (/^[A-Z_][A-Z0-9_]*$/i.test(key)) {
+                        // Parece un label pero no está definido
+                        errors.push(`Línea ${lineNumber}: Label no definido "${rawOp1.replace(/,/g, '')}"`);
+                        continue;
+                    }
                 }
                 const operand1 = parseOperand(rawOp1);
 
