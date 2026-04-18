@@ -1,5 +1,29 @@
+# Dependencies
 node_modules/
+
+# Electron build output
 dist/
 out/
+build/
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Environment
 .env
+.env.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor / IDE
+.vscode/
+.idea/
+*.suo
+*.user
+
+# Claude Code
+CLAUDE.md
+.claude/
