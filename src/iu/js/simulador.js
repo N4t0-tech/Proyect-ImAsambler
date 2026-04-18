@@ -5,8 +5,9 @@ require.config({
 });
 
 require(["vs/editor/editor.main"], function () {
+  const savedCode = localStorage.getItem("pic_code") || "; Código PIC16F84A\n";
   const editor = monaco.editor.create(document.getElementById("editor"), {
-    value: "; Código PIC16F84A\n",
+    value: savedCode,
     language: "plaintext",
     theme: "vs",
 
@@ -18,6 +19,10 @@ require(["vs/editor/editor.main"], function () {
 
     minimap: { enabled: false },
     scrollBeyondLastLine: false,
+  });
+
+  editor.onDidChangeModelContent(() => {
+    localStorage.setItem("pic_code", editor.getValue());
   });
 
   editor.focus();
@@ -81,6 +86,13 @@ function executeCurrentLine() {
   window.PICInterpreter.step(lines[pc]);
 
   const newState = window.PICInterpreter.getState();
+
+  if (newState.stackError) {
+    stop();
+    alert("Error de stack: " + newState.stackError);
+    return;
+  }
+
   syncSFR(newState);
   updatePC(newState);
   updateW(newState);
@@ -115,14 +127,14 @@ function step() {
 }
 
 document.getElementById("btnLimpiar").addEventListener("click", () => {
-  editor.setValue("");
+  if (window.editor) window.editor.setValue("");
   lines = [];
   currentLine = 0;
   updateInputs();
 });
 
 document.getElementById("btnSimular").addEventListener("click", () => {
-  const codigo = editor.getValue();
+  const codigo = window.editor ? window.editor.getValue() : "";
   lines = codigo.split("\n");
 
   // 1. Resetear intérprete
@@ -199,6 +211,22 @@ function syncSFR(state) {
 
     if (value !== undefined) {
       updateSFRRow(row, value);
+    }
+  });
+
+  document.querySelectorAll(".gpr-row").forEach((row) => {
+    const spans = row.querySelectorAll("span");
+    if (spans.length < 2) return;
+
+    const addrText = spans[0].textContent.trim().replace(/h$/i, "");
+    const addrNum = parseInt(addrText, 16);
+    if (isNaN(addrNum)) return;
+
+    const key = "0x" + addrNum.toString(16).toUpperCase().padStart(2, "0");
+    const value = state.registers[key];
+
+    if (value !== undefined) {
+      spans[1].textContent = value.toString(16).toUpperCase().padStart(2, "0");
     }
   });
 }

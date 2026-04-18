@@ -22,13 +22,35 @@ function parseValue(token) {
   return parseInt(s, 10);
 }
 
+const SFR_MAP = {
+  INDF: "0x00", TMR0: "0x01", PCL: "0x02", STATUS: "0x03",
+  FSR: "0x04", PORTA: "0x05", PORTB: "0x06", EEDATA: "0x08",
+  EEADR: "0x09", PCLATH: "0x0A", INTCON: "0x0B",
+  OPTION_REG: "0x81", TRISA: "0x85", TRISB: "0x86",
+  EECON1: "0x88", EECON2: "0x89",
+};
+
 function normalizeReg(token) {
   if (token === undefined || token === null) return token;
   const s = token.toString().trim();
   const n = parseValue(s);
   if (!isNaN(n))
     return "0x" + (n & 0xff).toString(16).toUpperCase().padStart(2, "0");
-  return s.toUpperCase();
+  const upper = s.toUpperCase();
+  return SFR_MAP[upper] || upper;
+}
+
+const BANK1_MAP = { 0x01: 0x81, 0x05: 0x85, 0x06: 0x86, 0x08: 0x88, 0x09: 0x89 };
+
+function effectiveReg(token, state) {
+  const key = normalizeReg(token);
+  if (key && key.startsWith("0x")) {
+    const addr = parseInt(key.slice(2), 16);
+    if (getFlag(state, 5) && BANK1_MAP[addr] !== undefined) {
+      return "0x" + BANK1_MAP[addr].toString(16).toUpperCase().padStart(2, "0");
+    }
+  }
+  return key;
 }
 
 function setZeroFlag(state, val) {
@@ -102,7 +124,7 @@ const INSTRUCTIONS = {
     // ADDWF f,d : W + f -> d (F o W). Ej: ADDWF 0x20,F
     operands: 2,
     execute: ([f, d], st) => {
-      const k = normalizeReg(f);
+      const k = effectiveReg(f, st);
       const cur = st.registers[k] || 0;
       const oldW = st.W & 0xff;
       const full = cur + oldW;
@@ -117,7 +139,7 @@ const INSTRUCTIONS = {
     // ANDWF f,d : W & f -> d. Ej: ANDWF 0x20,W
     operands: 2,
     execute: ([f, d], st) => {
-      const k = normalizeReg(f);
+      const k = effectiveReg(f, st);
       const cur = st.registers[k] || 0;
       const val = cur & st.W & 0xff;
       const destF = d && (d.toUpperCase() === "F" || d === "1");
@@ -130,7 +152,7 @@ const INSTRUCTIONS = {
     // CLRF f : f = 0. Ej: CLRF 0x05
     operands: 1,
     execute: ([f], st) => {
-      const k = normalizeReg(f);
+      const k = effectiveReg(f, st);
       st.registers[k] = 0;
       setZeroFlag(st, 0);
     },
@@ -147,7 +169,7 @@ const INSTRUCTIONS = {
     // COMF f,d : complemento a 1 de f -> d. Ej: COMF 0x20,W
     operands: 2,
     execute: ([f, d], st) => {
-      const k = normalizeReg(f);
+      const k = effectiveReg(f, st);
       const cur = st.registers[k] || 0;
       const val = ~cur & 0xff;
       const destF = d && (d.toUpperCase() === "F" || d === "1");
@@ -160,7 +182,7 @@ const INSTRUCTIONS = {
     // DECF f,d : f - 1 -> d. Ej: DECF 0x20,F
     operands: 2,
     execute: ([f, d], st) => {
-      const k = normalizeReg(f);
+      const k = effectiveReg(f, st);
       const cur = st.registers[k] || 0;
       const val = (cur - 1) & 0xff;
       const destF = d && (d.toUpperCase() === "F" || d === "1");
@@ -173,10 +195,12 @@ const INSTRUCTIONS = {
     // DECFSZ f,d : decrementa; si resultado = 0 salta siguiente
     operands: 2,
     execute: ([f, d], st) => {
-      const k = normalizeReg(f);
+      const k = effectiveReg(f, st);
       const cur = st.registers[k] || 0;
       const val = (cur - 1) & 0xff;
-      st.registers[k] = val;
+      const destF = d && (d.toUpperCase() === "F" || d === "1");
+      if (destF) st.registers[k] = val;
+      else st.W = val;
       if (val === 0) st.PC++;
       setZeroFlag(st, val);
     },
@@ -185,7 +209,7 @@ const INSTRUCTIONS = {
     // INCF f,d : f + 1 -> d. Ej: INCF 0x20,W
     operands: 2,
     execute: ([f, d], st) => {
-      const k = normalizeReg(f);
+      const k = effectiveReg(f, st);
       const cur = st.registers[k] || 0;
       const val = (cur + 1) & 0xff;
       const destF = d && (d.toUpperCase() === "F" || d === "1");
@@ -198,10 +222,12 @@ const INSTRUCTIONS = {
     // INCFSZ f,d : incrementa; si resultado = 0 salta siguiente
     operands: 2,
     execute: ([f, d], st) => {
-      const k = normalizeReg(f);
+      const k = effectiveReg(f, st);
       const cur = st.registers[k] || 0;
       const val = (cur + 1) & 0xff;
-      st.registers[k] = val;
+      const destF = d && (d.toUpperCase() === "F" || d === "1");
+      if (destF) st.registers[k] = val;
+      else st.W = val;
       if (val === 0) st.PC++;
       setZeroFlag(st, val);
     },
@@ -210,7 +236,7 @@ const INSTRUCTIONS = {
     // IORWF f,d : W | f -> d. Ej: IORWF 0x20,F
     operands: 2,
     execute: ([f, d], st) => {
-      const k = normalizeReg(f);
+      const k = effectiveReg(f, st);
       const cur = st.registers[k] || 0;
       const val = (cur | st.W) & 0xff;
       const destF = d && (d.toUpperCase() === "F" || d === "1");
@@ -223,7 +249,7 @@ const INSTRUCTIONS = {
     // MOVF f,d : mueve f -> d. Ej: MOVF 0x20,W
     operands: 2,
     execute: ([f, d], st) => {
-      const k = normalizeReg(f);
+      const k = effectiveReg(f, st);
       const cur = st.registers[k] || 0;
       const destF = d && (d.toUpperCase() === "F" || d === "1");
       if (destF) st.registers[k] = cur;
@@ -236,7 +262,7 @@ const INSTRUCTIONS = {
     // Nota: no modifica la bandera Z en este intérprete.
     operands: 1,
     execute: ([f], st) => {
-      const k = normalizeReg(f);
+      const k = effectiveReg(f, st);
       st.registers[k] = st.W & 0xff;
     },
   },
@@ -246,7 +272,7 @@ const INSTRUCTIONS = {
     // RLF f,d : rota left f -> d, rota a través de Carry (bit0 de STATUS)
     operands: 2,
     execute: ([f, d], st) => {
-      const k = normalizeReg(f);
+      const k = effectiveReg(f, st);
       const cur = st.registers[k] || 0;
       const oldCarry = getFlag(st, 0) ? 1 : 0;
       const newCarry = (cur & 0x80) >> 7;
@@ -262,7 +288,7 @@ const INSTRUCTIONS = {
     // RRF f,d : rota right f -> d, rota a través de Carry (bit0 de STATUS)
     operands: 2,
     execute: ([f, d], st) => {
-      const k = normalizeReg(f);
+      const k = effectiveReg(f, st);
       const cur = st.registers[k] || 0;
       const oldCarry = getFlag(st, 0) ? 1 : 0;
       const newCarry = cur & 0x01;
@@ -278,7 +304,7 @@ const INSTRUCTIONS = {
     // SUBWF f,d : f - W -> d. Ej: SUBWF 0x20,W
     operands: 2,
     execute: ([f, d], st) => {
-      const k = normalizeReg(f);
+      const k = effectiveReg(f, st);
       const cur = st.registers[k] || 0;
       const oldW = st.W & 0xff;
       const full = cur - oldW;
@@ -293,7 +319,7 @@ const INSTRUCTIONS = {
     // SWAPF f,d : intercambia nibbles alto/bajo. Ej: SWAPF 0x20,F
     operands: 2,
     execute: ([f, d], st) => {
-      const k = normalizeReg(f);
+      const k = effectiveReg(f, st);
       const v = st.registers[k] || 0;
       const val = (((v & 0x0f) << 4) | ((v & 0xf0) >> 4)) & 0xff;
       const destF = d && (d.toUpperCase() === "F" || d === "1");
@@ -306,7 +332,7 @@ const INSTRUCTIONS = {
     // XORWF f,d : W ^ f -> d. Ej: XORWF 0x20,W
     operands: 2,
     execute: ([f, d], st) => {
-      const k = normalizeReg(f);
+      const k = effectiveReg(f, st);
       const cur = st.registers[k] || 0;
       const val = (cur ^ st.W) & 0xff;
       const destF = d && (d.toUpperCase() === "F" || d === "1");
@@ -322,7 +348,7 @@ const INSTRUCTIONS = {
     // BCF f,b : limpia bit b de f. Ej: BCF 0x05,2
     operands: 2,
     execute: ([f, b], st) => {
-      const k = normalizeReg(f);
+      const k = effectiveReg(f, st);
       const cur = st.registers[k] || 0;
       st.registers[k] = cur & ~(1 << Number(b)) & 0xff;
     },
@@ -331,7 +357,7 @@ const INSTRUCTIONS = {
     // BSF f,b : setea bit b de f. Ej: BSF 0x05,3
     operands: 2,
     execute: ([f, b], st) => {
-      const k = normalizeReg(f);
+      const k = effectiveReg(f, st);
       const cur = st.registers[k] || 0;
       st.registers[k] = (cur | (1 << Number(b))) & 0xff;
     },
@@ -340,7 +366,7 @@ const INSTRUCTIONS = {
     // BTFSC f,b : si bit = 0 salta siguiente instrucción
     operands: 2,
     execute: ([f, b], st) => {
-      const k = normalizeReg(f);
+      const k = effectiveReg(f, st);
       const cur = st.registers[k] || 0;
       if ((cur & (1 << Number(b))) === 0) st.PC++;
     },
@@ -349,7 +375,7 @@ const INSTRUCTIONS = {
     // BTFSS f,b : si bit = 1 salta siguiente instrucción
     operands: 2,
     execute: ([f, b], st) => {
-      const k = normalizeReg(f);
+      const k = effectiveReg(f, st);
       const cur = st.registers[k] || 0;
       if ((cur & (1 << Number(b))) !== 0) st.PC++;
     },
@@ -412,40 +438,64 @@ const INSTRUCTIONS = {
   RETLW: {
     // RETLW k : carga literal en W y retorna (pop)
     operands: 1,
+    jumps: true,
     execute: ([k], st) => {
       st.W = parseValue(k) & 0xff;
-      st.PC = st.stack.length ? st.stack.pop() : 0;
+      if (!st.stack.length) {
+        st.stackError = "Stack underflow: RETLW sin CALL previo";
+        st.PC = 0;
+        return;
+      }
+      st.PC = st.stack.pop();
     },
   },
 
   // Flow / control
   CALL: {
-    // CALL k : push PC, PC = k. Ej: CALL 0x10
+    // CALL k : push PC+1 (dirección de retorno), PC = k. Ej: CALL 0x10
     operands: 1,
+    jumps: true,
     execute: ([k], st) => {
-      st.stack.push(st.PC);
+      if (st.stack.length >= 8) {
+        st.stackError = "Stack overflow: se superaron los 8 niveles del PIC16F84A";
+        return;
+      }
+      st.stack.push(st.PC + 1);
       st.PC = parseValue(k);
     },
   },
   GOTO: {
     // GOTO k : PC = k. Ej: GOTO 0x20
     operands: 1,
+    jumps: true,
     execute: ([k], st) => {
       st.PC = parseValue(k);
     },
   },
   RETURN: {
-    // RETURN : pop PC
+    // RETURN : pop PC (dirección de retorno guardada por CALL)
     operands: 0,
+    jumps: true,
     execute: (_, st) => {
-      st.PC = st.stack.length ? st.stack.pop() : 0;
+      if (!st.stack.length) {
+        st.stackError = "Stack underflow: RETURN sin CALL previo";
+        st.PC = 0;
+        return;
+      }
+      st.PC = st.stack.pop();
     },
   },
-  // RETFIE : Return from interrupt -> comportado como RETURN (pop PC)
   RETFIE: {
+    // RETFIE : retorno de interrupción (comportado como RETURN)
     operands: 0,
+    jumps: true,
     execute: (_, st) => {
-      st.PC = st.stack.length ? st.stack.pop() : 0;
+      if (!st.stack.length) {
+        st.stackError = "Stack underflow: RETFIE sin CALL previo";
+        st.PC = 0;
+        return;
+      }
+      st.PC = st.stack.pop();
     },
   },
   // CLRWDT : Clear watchdog timer (no modelado)
@@ -457,7 +507,12 @@ const INSTRUCTIONS = {
 function validateLine(line, lineNumber) {
   const parsed = parseLine(line);
   if (!parsed) return null;
-  const { instruction, operands } = parsed;
+  let { instruction, operands } = parsed;
+  // Strip label prefix if present (e.g. "inicio:" or inline "inicio: MOVLW")
+  if (instruction.endsWith(":")) {
+    if (operands.length === 0) return null; // label-only line
+    instruction = operands.shift().toUpperCase();
+  }
   const def = INSTRUCTIONS[instruction];
   if (!def)
     return {
@@ -483,6 +538,7 @@ window.PICInterpreter = {
     PIC_STATE.W = 0;
     PIC_STATE.registers = {};
     PIC_STATE.stack = [];
+    PIC_STATE.stackError = null;
   },
   validate(lines) {
     const errors = [];
@@ -492,22 +548,30 @@ window.PICInterpreter = {
     });
     return errors;
   },
-  // Ejecuta una línea. Las instrucciones pueden modificar PIC_STATE.PC
-  // directamente (por ejemplo GOTO/CALL/BTFSS/DECFSZ). Si la línea es vacía
-  // o desconocida, simplemente avanza PC.
+  // Ejecuta una línea. Instrucciones con `jumps: true` (GOTO, CALL, RETURN, etc.)
+  // controlan PC directamente y no reciben el PC++ automático.
+  // Instrucciones de skip (BTFSC/BTFSS/DECFSZ/INCFSZ) hacen PC++ interno
+  // para el salto y reciben el PC++ externo para avanzar normalmente.
   step(line) {
     const parsed = parseLine(line);
     if (!parsed) {
       PIC_STATE.PC++;
       return;
     }
-    const def = INSTRUCTIONS[parsed.instruction];
+    let { instruction, operands } = parsed;
+    // Manejar labels inline (ej: "inicio: MOVLW 0x55")
+    if (instruction.endsWith(':')) {
+      if (operands.length === 0) { PIC_STATE.PC++; return; }
+      instruction = operands.shift().toUpperCase();
+    }
+    const def = INSTRUCTIONS[instruction];
     if (!def) {
       PIC_STATE.PC++;
       return;
     }
-    def.execute(parsed.operands, PIC_STATE);
-    PIC_STATE.PC++;
+    PIC_STATE.stackError = null;
+    def.execute(operands, PIC_STATE);
+    if (!def.jumps) PIC_STATE.PC++;
   },
   getState() {
     return JSON.parse(JSON.stringify(PIC_STATE));
