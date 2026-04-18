@@ -65,7 +65,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const exampleCode = `; Ejemplo de código ASM\n\nMOVLW 0x0F ; Mover literal a W\n\nMOVWF 0x05 ; Mover W a archivo\n\nINCF 0x05, F ; Incrementar archivo\n\nGOTO 0x10 ; Saltar a dirección`;
 
-  codeEditor.value = exampleCode;
+  const savedCode = localStorage.getItem("pic_code");
+  codeEditor.value = savedCode || exampleCode;
+  updateLineNumbers();
+  updateSyntaxHighlight();
 
   codeEditor.addEventListener("focus", () => {
     if (codeEditor.value === exampleCode) {
@@ -87,6 +90,7 @@ function setupEventListeners() {
     updateLineNumbers();
     updateSyntaxHighlight();
     syncScroll();
+    localStorage.setItem("pic_code", codeEditor.value);
   });
 
   codeEditor.addEventListener("scroll", syncScroll);

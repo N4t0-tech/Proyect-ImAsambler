@@ -5,6 +5,10 @@ const createWindow = () => {
     width: 1800,
     height: 840,
     autoHideMenuBar: true,
+    webPreferences: {
+      contextIsolation: true,
+      nodeIntegration: false,
+    },
   })
 
   win.loadFile('src/iu/screens/index.html')

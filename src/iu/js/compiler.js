@@ -115,36 +115,61 @@ function compileASM(asmCode) {
     const errors = [];
     const hexLines = [];
     let address = 0x0000;
-    
+
     const lines = asmCode.split('\n');
-    
+
+    // Pass 1: build label table
+    const labelTable = {};
+    let scanAddr = address;
+    for (const rawLine of lines) {
+        let line = rawLine.trim().replace(/;.*$/, '').trim();
+        if (!line) continue;
+        const tok0 = line.split(/\s+/)[0].toUpperCase();
+        if (tok0 === 'END') break;
+        if (tok0 === 'ORG') { scanAddr = parseNumber(line.split(/\s+/)[1]); continue; }
+        if (tok0.endsWith(':')) {
+            labelTable[tok0.slice(0, -1)] = scanAddr;
+            line = line.slice(tok0.length).trim();
+            if (!line) continue;
+        }
+        const instr = line.split(/\s+/)[0].toUpperCase();
+        if (INSTRUCTION_SET[instr]) scanAddr++;
+    }
+
     for (let i = 0; i < lines.length; i++) {
         const lineNumber = i + 1;
         let line = lines[i].trim();
-        
+
         // Remove comments
         const commentIndex = line.indexOf(';');
         if (commentIndex !== -1) {
             line = line.substring(0, commentIndex).trim();
         }
-        
+
         // Skip empty lines
         if (!line) continue;
-        
+
+        // Strip inline label (e.g. "inicio: MOVLW 0x55")
+        const firstTok = line.split(/\s+/)[0];
+        if (firstTok.endsWith(':')) {
+            line = line.slice(firstTok.length).trim();
+            if (!line) continue; // label-only line
+        }
+
         // Parse line
         const parts = line.split(/\s+/);
         const instruction = parts[0].toUpperCase();
-        
+
         // Handle directives
         if (instruction === 'ORG') {
             address = parseNumber(parts[1]);
             continue;
         }
-        
+
         if (instruction === 'END') {
             break;
         }
-        
+
         // Compile instruction
         const instrDef = INSTRUCTION_SET[instruction];
         
@@ -157,8 +182,13 @@ function compileASM(asmCode) {
             let machineCode = instrDef.opcode;
             
             if (instrDef.operands >= 1) {
-                const operand1 = parseOperand(parts[1]);
-                
+                // Resolve label if operand is a known label name
+                let rawOp1 = parts[1];
+                if (rawOp1 && labelTable[rawOp1.toUpperCase().replace(/,/g, '')] !== undefined) {
+                    rawOp1 = labelTable[rawOp1.toUpperCase().replace(/,/g, '')].toString();
+                }
+                const operand1 = parseOperand(rawOp1);
+
                 if (instruction === 'GOTO' || instruction === 'CALL') {
                     // 11-bit address
                     machineCode |= (operand1 & 0x7FF);
