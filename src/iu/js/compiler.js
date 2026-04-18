@@ -53,9 +53,12 @@ function parseNumber(str) {
         return parseInt(str.substring(2), 16);
     }
     
-    // Binary
+    // Binary (0b... o b'...' o B'...')
     if (str.startsWith('0b') || str.startsWith('0B')) {
         return parseInt(str.substring(2), 2);
+    }
+    if (/^[bB]'([01]+)'$/.test(str)) {
+        return parseInt(str.slice(2, -1), 2);
     }
     
     // Hexadecimal with H suffix

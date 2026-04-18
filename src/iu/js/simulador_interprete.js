@@ -18,6 +18,8 @@ function parseValue(token) {
     return parseInt(s.substring(2), 16);
   if (s.startsWith("0b") || s.startsWith("0B"))
     return parseInt(s.substring(2), 2);
+  if (/^[bB]'([01]+)'$/.test(s))
+    return parseInt(s.slice(2, -1), 2);
   if (/^[0-9A-Fa-f]+h$/i.test(s)) return parseInt(s.slice(0, -1), 16);
   return parseInt(s, 10);
 }

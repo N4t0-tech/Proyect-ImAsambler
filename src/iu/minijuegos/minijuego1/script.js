@@ -168,14 +168,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
   function validateASM2(code) {
+    const hasBankSwitch =
+      /bsf\s+STATUS\s*,\s*(RP0|5)/i.test(code) ||
+      /bsf\s+0x03\s*,\s*(RP0|5)/i.test(code);
+    const hasBankReturn =
+      /bcf\s+STATUS\s*,\s*(RP0|5)/i.test(code) ||
+      /bcf\s+0x03\s*,\s*(RP0|5)/i.test(code);
     const hasTRISB =
+      hasBankSwitch &&
       /TRISB/i.test(code) &&
       (/clrf\s+TRISB/i.test(code) || /movwf\s+TRISB/i.test(code));
     const setsRB1 =
       /bsf\s+PORTB\s*,\s*1/i.test(code) ||
       /bsf\s+PORTB,1/i.test(code) ||
       /PORTB\s*=\s*2/i.test(code);
-    return { hasTRISB, setsRB1 };
+    return { hasBankSwitch, hasBankReturn, hasTRISB, setsRB1 };
   }
   function lightLED2(on) {
     if (!led2) return;
@@ -187,6 +194,22 @@ document.addEventListener("DOMContentLoaded", () => {
     check2.addEventListener("click", () => {
       const code = asm2.value || "";
       const res = validateASM2(code);
+      if (!res.hasBankSwitch) {
+        lightLED2(false);
+        showMessage2(
+          "Primero debes cambiar al Banco 1 con BSF STATUS,RP0 para configurar TRISB.",
+          false
+        );
+        return;
+      }
+      if (!res.hasBankReturn) {
+        lightLED2(false);
+        showMessage2(
+          "Debes volver al Banco 0 con BCF STATUS,RP0 antes de usar PORTB.",
+          false
+        );
+        return;
+      }
       if (!res.hasTRISB && !res.setsRB1) {
         lightLED2(false);
         showMessage2(
