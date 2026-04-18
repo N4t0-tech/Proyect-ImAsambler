@@ -283,6 +283,19 @@ header {
 .gpr-row:not(.gpr-header):hover {
   background-color: #f1f5ff;
 }
+.sim-error {
+  display: none;
+  margin-top: 8px;
+  padding: 10px 14px;
+  background-color: #2a1010;
+  border: 1px solid #ef4444;
+  border-radius: 6px;
+  color: #f87171;
+  font-family: Consolas, monospace;
+  font-size: 13px;
+  white-space: pre-wrap;
+}
+
 .gpr-row span:nth-child(2),
 .gpr-row span:nth-child(4) {
   display: inline-block;

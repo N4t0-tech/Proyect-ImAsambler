@@ -46,6 +46,12 @@ function effectiveReg(token, state) {
   const key = normalizeReg(token);
   if (key && key.startsWith("0x")) {
     const addr = parseInt(key.slice(2), 16);
+    // INDF (0x00): acceso indirecto — usa la dirección apuntada por FSR (0x04)
+    if (addr === 0x00) {
+      const fsr = state.registers["0x04"] || 0;
+      return "0x" + (fsr & 0xff).toString(16).toUpperCase().padStart(2, "0");
+    }
+    // Bank 1: si RP0 (bit5 de STATUS) está activo, redirigir al banco 1
     if (getFlag(state, 5) && BANK1_MAP[addr] !== undefined) {
       return "0x" + BANK1_MAP[addr].toString(16).toUpperCase().padStart(2, "0");
     }

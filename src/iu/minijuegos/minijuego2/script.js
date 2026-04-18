@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const leds = document.getElementById("leds");
   const ledPreview = document.getElementById("ledPreview");
   const newByteBtn = document.getElementById("newByte");
-  const checkBinaryBtn = document.getElementById("checkBinary"); // Keep reference for future use
+  document.getElementById("checkBinary");
   const binaryResult = document.getElementById("binaryResult");
 
   const asmCode = document.getElementById("asmCode");
@@ -167,7 +167,6 @@ document.addEventListener("DOMContentLoaded", function () {
       .reverse()
       .join("");
     const expected = currentBits.split("").reverse().join("");
-    const selectedCount = (selected.match(/1/g) || []).length;
     const expectedCount = (currentBits.match(/1/g) || []).length;
     if (selected === expected) {
       binaryResult.textContent = `Correcto — ${expectedCount} LEDs encendidos.`;
@@ -189,27 +188,29 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function checkAsm() {
-    const code = asmCode.value.toUpperCase();
-    const hasBSF = code.includes("BSF STATUS");
-    const hasCLRF = code.includes("CLRF TRISB");
-    const hasBCF = code.includes("BCF STATUS");
-    const hasMOVWFTRISB = code.includes("MOVWF TRISB");
-    const idxBSF = code.indexOf("BSF STATUS");
-    const idxCLRF = code.indexOf("CLRF TRISB");
-    const idxBCF = code.indexOf("BCF STATUS");
-    if (!hasBSF || !hasCLRF || !hasBCF) {
+    const code = asmCode.value;
+    const reBSF  = /bsf\s+STATUS\s*,\s*(RP0|5)/i;
+    const reCLRF = /clrf\s+TRISB/i;
+    const reBCF  = /bcf\s+STATUS\s*,\s*(RP0|5)/i;
+    const reMOVWF = /movwf\s+TRISB/i;
+
+    const mBSF  = reBSF.exec(code);
+    const mCLRF = reCLRF.exec(code);
+    const mBCF  = reBCF.exec(code);
+
+    if (!mBSF || !mCLRF || !mBCF) {
       asmResult.textContent =
         "Falta la secuencia correcta de bank switching o CLRF TRISB.";
       asmResult.className = "result fail";
       return;
     }
-    if (hasMOVWFTRISB) {
+    if (reMOVWF.test(code)) {
       asmResult.textContent =
         "Error detectado: no uses MOVWF TRISB. Usa CLRF TRISB en banco 1.";
       asmResult.className = "result fail";
       return;
     }
-    if (!(idxBSF < idxCLRF && idxCLRF < idxBCF)) {
+    if (!(mBSF.index < mCLRF.index && mCLRF.index < mBCF.index)) {
       asmResult.textContent =
         "El orden de instrucciones para cambiar de banco y configurar TRISB parece incorrecto.";
       asmResult.className = "result fail";

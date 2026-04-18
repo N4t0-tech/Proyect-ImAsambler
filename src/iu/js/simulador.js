@@ -34,6 +34,18 @@ let lines = [];
 let isPlaying = false;
 let playInterval;
 
+function showError(msg) {
+  const panel = document.getElementById("errorPanel");
+  if (!panel) return;
+  panel.textContent = msg;
+  panel.style.display = "block";
+}
+
+function hideError() {
+  const panel = document.getElementById("errorPanel");
+  if (panel) panel.style.display = "none";
+}
+
 function updateInputs() {
   const lastInput = document.getElementById("lastIntr");
   const nextInput = document.getElementById("nextIntr");
@@ -89,7 +101,7 @@ function executeCurrentLine() {
 
   if (newState.stackError) {
     stop();
-    alert("Error de stack: " + newState.stackError);
+    showError("Error de stack: " + newState.stackError);
     return;
   }
 
@@ -119,6 +131,7 @@ function stop() {
   clearInterval(playInterval);
   isPlaying = false;
   currentLine = 0;
+  if (window.PICInterpreter) PICInterpreter.reset();
   updateInputs();
 }
 
@@ -143,16 +156,14 @@ document.getElementById("btnSimular").addEventListener("click", () => {
   // 2. Validar código
   const errors = PICInterpreter.validate(lines);
   if (errors.length > 0) {
-    console.error("Errores de compilación:", errors);
-    alert(errors.map((e) => `Línea ${e.line}: ${e.error}`).join("\n"));
+    showError(errors.map((e) => `Línea ${e.line}: ${e.error}`).join("\n"));
     return;
   }
 
   // 3. Inicializar simulación
+  hideError();
   currentLine = 0;
   updateInputs();
-
-  console.log("Código válido. Listo para simular.");
 });
 
 document.getElementById("btnIndex").addEventListener("click", function () {
