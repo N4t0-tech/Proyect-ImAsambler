@@ -53,7 +53,7 @@ function updatePC(state) {
   const el = document.getElementById("pcBin");
   if (!el) return;
   const pc = st.PC;
-  el.value = pc.toString(2).padStart(8, "0");
+  el.value = pc.toString(2).padStart(11, "0");
 
   const lastInput = document.getElementById("lastIntr");
   const nextInput = document.getElementById("nextIntr");
