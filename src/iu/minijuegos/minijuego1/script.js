@@ -21,14 +21,18 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function validateASM(code) {
+    const hasBankSwitch =
+      /bsf\s+STATUS\s*,\s*(RP0|5)/i.test(code) ||
+      /bsf\s+0x03\s*,\s*(RP0|5)/i.test(code);
     const hasTRISB =
+      hasBankSwitch &&
       /TRISB/i.test(code) &&
       (/clrf\s+TRISB/i.test(code) || /movwf\s+TRISB/i.test(code));
     const setsRB0 =
       /bsf\s+PORTB\s*,\s*0/i.test(code) ||
       /bsf\s+PORTB,0/i.test(code) ||
       /PORTB\s*=\s*1/i.test(code);
-    return { hasTRISB, setsRB0 };
+    return { hasBankSwitch, hasTRISB, setsRB0 };
   }
 
   function lightLED(on) {
@@ -51,6 +55,15 @@ document.addEventListener("DOMContentLoaded", () => {
     checkBtn.addEventListener("click", () => {
       const code = asmEl.value || "";
       const res = validateASM(code);
+
+      if (!res.hasBankSwitch) {
+        lightLED(false);
+        showMessage(
+          "Primero debes cambiar al Banco 1 con BSF STATUS,RP0 para poder configurar TRISB.",
+          false
+        );
+        return;
+      }
 
       if (!res.hasTRISB && !res.setsRB0) {
         lightLED(false);

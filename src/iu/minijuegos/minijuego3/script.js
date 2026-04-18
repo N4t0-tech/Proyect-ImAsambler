@@ -61,9 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const up = code.toUpperCase();
     const hasTRISB =
       /TRISB/.test(up) &&
-      (/CLRF\s+TRISB/.test(up) ||
-        /MOVWF\s+TRISB/.test(up) ||
-        /MOVWF\s+TRISB/.test(up));
+      (/CLRF\s+TRISB/.test(up) || /MOVWF\s+TRISB/.test(up));
     const hasRotate =
       /RLF\s+PORTB/i.test(up) ||
       /RRF\s+PORTB/i.test(up) ||
